@@ -11,11 +11,11 @@ COMMON SHARED cursorx, cursory, tadd%, spread$, userobj$, imagex, imagey, option
 '  imagex               - size x of an object stored (no main)
 '  imagey               - size y of an object stored (no main)
 '  option$()            - array of options stored for use in mainmenu
-'  optionx%()           - array for options x positions for use in mainmenu    
-'  cps$()               - array for storing comments on options for mainmenu                                                                                                        
+'  optionx%()           - array for options x positions for use in mainmenu
+'  cps$()               - array for storing comments on options for mainmenu                                                                                                  
 '  clrs()               - double array for storing palette values
-'  return$              - stores any return value of a subroutine                                                                                                                                                                       
-'  clr%                 - current colour selected                                                                                                            
+'  return$              - stores any return value of a subroutine                                                                                                                                                                 
+'  clr%                 - current colour selected                                                                                                      
 '  tools$               - stores the tool name selected
 '  objs1%               - stores the object name selected
 '  tadd%                - stores time constant
@@ -290,6 +290,7 @@ CLS
 cursorx = 280
 cursory = 170
 nullify
+CLOSE #1
 OPEN "O", #1, "ram.sys"
 CLOSE #1
 OPEN "B", #1, "ram.sys"
@@ -918,10 +919,10 @@ END SUB
 
 SUB click1
 FOR i% = 2000 TO 6000 STEP 500
-SOUND i%, .15
+SOUND i%, .05
 NEXT
 FOR i% = 6000 TO 2000 STEP -500
-SOUND i%, .15
+SOUND i%, .05
 NEXT
 END SUB
 
@@ -1366,12 +1367,11 @@ df$ = "A"
 expand "LOADING . . .", 25, 20, 6, 4, 15, 38, 21000, 0
 z = FREEFILE
 OPEN "B", #z, "ram.sys"
+yydf$ = STRING$(387 * 2, df$)
+SEEK #z, 1
 FOR xx = 0 TO 496 STEP .5
-FOR yy = 0 TO 386 STEP .5
 ips = position(xx, yy)
-SEEK #z, ips
-PUT #z, ips, df$
-NEXT
+PUT #z, , yydf$
 LINE (0, 300)-(xx, 300), 10
 NEXT
 END SUB
@@ -2498,7 +2498,7 @@ imagex = c
 imagey = r
 END SUB
 
-SUB pnt (tx1 AS INTEGER, ty1 AS INTEGER, tx2 AS INTEGER, ty2 AS INTEGER, c%)
+3 SUB pnt (tx1 AS INTEGER, ty1 AS INTEGER, tx2 AS INTEGER, ty2 AS INTEGER, c%)
 FOR i% = tx1 TO tx2
 LINE (i%, ty1)-(i%, ty2), c%
 NEXT
@@ -2795,7 +2795,7 @@ x = cusorx
 y = cursory
 c% = clr%
 IF (LCASE$(LEFT$(tools$, 5)) = "brush" AND pens% = 1) THEN
-   VIEW SCREEN (42, 22)-(538, 438)'------------Possible error  
+   VIEW SCREEN (42, 22)-(538, 438)'------------Possible error
    SELECT CASE tools$
           CASE "brush:1"
              CIRCLE (realx(x), realy(y)), 3, c%
@@ -3824,7 +3824,7 @@ FOR i% = 1 TO LEN(s$)
 a$ = MID$(s$, i%, 1)
 IF a$ <> " " THEN char a$, hx1%, y, t1, p1, c
 hx1% = hx1% + p
-SOUND f, t
+'SOUND f, .01
 NEXT
 END SUB
 
