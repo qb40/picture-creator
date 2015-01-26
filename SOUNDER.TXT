@@ -1,20 +1,19 @@
-COMMON SHARED cursorx, cursory, tadd%, spread$, userobj$, imagex, imagey, option$(), optionx%(), cps$(), clrs(), return$, clr%, tools$, pens%, objs1$, area1(), cscreen, screens, scxx1, scyy1, scxx2, scyy2
+COMMON SHARED cursorx, cursory, tadd%, spread$, userobj$, imagex, imagey, option$(), optionx%(), cps$(), clrs(), return$, clr%, tools$, pens%, objs1$, hx1%, hy1%, th%, rad%, rat!, drawx%, drawy%, degr%, txt$, xc%, yc%, thk%, size%, cc%, sp%, rate%
 
 '------------------------------Shared variables------------------------------
-'  cursorx              - x position of cursor
+'  cursorx       - x position of cursor
 '  cursory              - y position of cursor
-'  area1(),area2()      - stores screen area
 '  pens%                - stores wteher pen up or pen down (0/1)
 '  spread$              - spreadline selected
-'  userobj$             - user object created in OBJ folder
-'  imagex               - size x of an object stored (no main)
-'  imagey               - size y of an object stored (no main)
-'  option$()            - array of options stored for use in mainmenu
-'  optionx%()           - array for options x positions for use in mainmenu
-'  cps$()               - array for storing comments on options for mainmenu                                                                                                  
+'  userobj$    - user object created in OBJ folder
+'  imagex      - size x of an object stored (no main)
+'  imagey      - size y of an object stored (no main)
+'  option$()   - array of options stored for use in mainmenu
+'  optionx%()  - array for options x positions for use in mainmenu    
+'  cps$()               - array for storing comments on options for mainmenu                                                                                                        
 '  clrs()               - double array for storing palette values
-'  return$              - stores any return value of a subroutine                                                                                                                                                                 
-'  clr%                 - current colour selected                                                                                                      
+'  return$              - stores any return value of a subroutine                                                                                                                                                                       
+'  clr%                 - current colour selected                                                                                                            
 '  tools$               - stores the tool name selected
 '  objs1%               - stores the object name selected
 '  tadd%                - stores time constant
@@ -28,32 +27,21 @@ COMMON SHARED cursorx, cursory, tadd%, spread$, userobj$, imagex, imagey, option
 
 '===============================Declarations=================================
 
-DECLARE SUB setscreens (n AS INTEGER)
-DECLARE SUB area (x1, y1, x2, y2)
-DECLARE SUB setscr (s%)
-DECLARE SUB scrdot (x%, y%, c%)
-DECLARE SUB scrline (x1%, y1%, x2%, y2%, c%)
-DECLARE SUB scrgenerate ()
-DECLARE SUB scrend ()
-DECLARE FUNCTION position (x AS SINGLE, y AS SINGLE)
 
+DECLARE FUNCTION position (add, x, y, ysize)
+DECLARE SUB save (f$, io%)
+DECLARE SUB load (f$, io%, x%, y%)
 DECLARE SUB nullify ()
 DECLARE SUB obj1 ()
 DECLARE SUB obj1p (s AS STRING, x AS SINGLE, y AS SINGLE)
-
 DECLARE SUB obj2 ()
 DECLARE SUB obj2d (f$, x AS SINGLE, y AS SINGLE, rx AS SINGLE, ry AS SINGLE)
 DECLARE SUB objimgsize (f$)
 DECLARE SUB obj2p (f$, x AS SINGLE, y AS SINGLE)
-
-
 DECLARE SUB savedot (x, y, c%)
 DECLARE FUNCTION drawmenu$ ()
 DECLARE SUB text ()
 DECLARE SUB sprdlns ()
-DECLARE FUNCTION escmenu$ (t$, b$, hx1%, hy1%, hx2%, hy2%, c%)
-
-
 DECLARE FUNCTION nospc$ (s AS STRING)
 DECLARE SUB tool ()
 DECLARE SUB tlbrush ()
@@ -62,12 +50,9 @@ DECLARE SUB tlrectangle ()
 DECLARE SUB tlcircle (o%)
 DECLARE SUB tlspray ()
 DECLARE SUB tlsprdln ()
-DECLARE SUB tlpencil (fp%)
-
 DECLARE SUB getit (x1 AS SINGLE, y1 AS SINGLE, x2 AS SINGLE, y2 AS SINGLE)
-DECLARE SUB disp (x1 AS SINGLE, y1 AS SINGLE, x2 AS SINGLE, y2 AS SINGLE)
-DECLARE SUB cursor (x AS SINGLE, y AS SINGLE, c%, a%, p%)
-DECLARE SUB intensity (r%, g%, b%)
+DECLARE SUB cursor (x AS SINGLE, y AS SINGLE, c%, a%)
+DECLARE SUB intensity (r%, G%, b%)
 DECLARE SUB colour ()
 DECLARE SUB status (s AS STRING, c%)
 DECLARE SUB ld ()
@@ -76,20 +61,18 @@ DECLARE FUNCTION randnum (s1 AS SINGLE, s2 AS SINGLE)
 DECLARE SUB pnt (x1 AS INTEGER, y1 AS INTEGER, x2 AS INTEGER, y2 AS INTEGER, c%)
 DECLARE FUNCTION realx (x AS SINGLE)
 DECLARE FUNCTION realy (y AS SINGLE)
-
 DECLARE FUNCTION mainmenu% (h$, hc%, u%, os%, oc%, bx1%, by1%, bx2%, by2%, bc%, bt%)
 DECLARE FUNCTION menu$ (s$, x1%, y1%, x2%, y2%, t$, b$, f%, tt%, c%, BF%, ib%)
 DECLARE SUB rub (x1 AS INTEGER, y1 AS INTEGER, x2 AS INTEGER, y2 AS INTEGER)
-DECLARE SUB linez (x1 AS INTEGER, y1 AS INTEGER, x2 AS INTEGER, y2 AS INTEGER, t AS INTEGER, c AS INTEGER)
-DECLARE SUB char (s AS STRING, x AS INTEGER, y AS INTEGER, t AS INTEGER, p AS INTEGER, c AS INTEGER)
+DECLARE SUB linez (x1 AS SINGLE, y1 AS SINGLE, x2 AS SINGLE, y2 AS SINGLE, t AS SINGLE, c AS INTEGER)
+DECLARE SUB char (s AS STRING, x, y, t, p, c AS INTEGER)
 DECLARE SUB word (s AS STRING, x AS INTEGER, y AS INTEGER, t1 AS INTEGER, p1 AS INTEGER, c AS INTEGER, p AS INTEGER, f AS INTEGER, t AS DOUBLE)
 DECLARE SUB expand (s AS STRING, x AS INTEGER, y AS INTEGER, t1 AS INTEGER, p1 AS INTEGER, c AS INTEGER, p AS INTEGER, f AS INTEGER, t AS DOUBLE)
-DECLARE SUB linex (x1 AS INTEGER, y1 AS INTEGER, x2 AS INTEGER, y2 AS INTEGER, t AS INTEGER, c AS INTEGER)
-DECLARE SUB liney (x1 AS INTEGER, y1 AS INTEGER, x2 AS INTEGER, y2 AS INTEGER, t AS INTEGER, c AS INTEGER)
+DECLARE SUB linex (x1 AS SINGLE, y1 AS SINGLE, x2 AS SINGLE, y2 AS SINGLE, t AS SINGLE, c AS INTEGER)
+DECLARE SUB liney (x1 AS SINGLE, y1 AS SINGLE, x2 AS SINGLE, y2 AS SINGLE, t AS SINGLE, c AS INTEGER)
 DECLARE SUB click1 ()
 DECLARE SUB click2 ()
 DECLARE SUB click3 ()
-
 DECLARE FUNCTION currdir$ ()
 DECLARE FUNCTION volname$ ()
 DECLARE FUNCTION volsnum$ ()
@@ -102,14 +85,19 @@ DECLARE FUNCTION files$ (a AS STRING, s AS STRING)
 '============================================================================
 
 
-DEFINT A-B '//////// Defining variable types
+DEFINT A-B, D-H, J-Z'//////// Defining variable types
 DEFSNG C
-DEFINT D-H
 DEFLNG I
-DEFINT J-Z
 DEFDBL T
 
-ON ERROR GOTO errs
+ON ERROR GOTO errs      '----------Stopping errors
+
+
+'---------------------------Setting Memory
+CLEAR 2100000000
+iii = SETMEM(2100000000)
+'------------------------------------------
+
 '============================Declaring Keys==================================
 CONST backspc = 8, enter = 13, htab = 9
 CONST left = 75, right = 77, up = 72, down = 80
@@ -117,15 +105,25 @@ CONST uplt = 71, uprt = 73, dnlt = 79, dnrt = 81
 CONST insert = 82, home = 73, pageup = 71, del = 83, endk = 81, pagedn = 79
 CONST kf1 = 59, kf2 = 60, kf3 = 61, kf4 = 62, kf5 = 63, kf6 = 64, kf7 = 65, kf8 = 66, kf9 = 67, kf10 = 68, kf11 = 133, kf12 = 134
 '-----------------------------Keys declared---------------------------------
-DIM SHARED varea(25000)
+
+
+'--------------------------------Defining Screen areas
+DIM iarea1(6200), iarea2(10070), iarea3(10070), iarea4(10070), iarea5(10070), iarea6(3900)
+'------------------------------------------------------
+
+
+CLS
+SCREEN 12
+GOSUB getscreen
+'--------------------Starting common things
 return$ = ""
 clr% = 0
 REM $DYNAMIC
 DIM clrs(16, 3)
-CLS
-SCREEN 12
-getit 0, 0, 10, 10
 inst = 0
+'-------------------------------------------
+
+
 '===============================Getting timer================================
 aaaa: sec1 = VAL(RIGHT$(TIME$, 2))
 IF sec1 > 58 THEN GOTO aaaa
@@ -141,23 +139,24 @@ IF tadd% > 10 AND tadd% <= 15 THEN tadd% = 10
 IF tadd% > 15 THEN tadd% = 20
 '----------------------------------------------------------------------------
 
+
+GOTO adfg
 '======================Analyse VGA Screen Mode===============================
-1 : COLOR 15
-PRINT "Analysing"
-PRINT "VGA Screen"
-PRINT "Mode "
-SOUND 21000, 50
-FOR i = 0 TO 300 STEP 16
-FOR j = 0 TO 15
-CIRCLE (320, 240), i + j, j
-NEXT
-NEXT
-OPEN "B", #1, "log.log"
-IF LOF(1) < 2 THEN t = .3
+1 : OPEN "B", #1, "log.log"
+IF LOF(1) > 3 THEN GOTO main
+t = .3
 SEEK #1, 1
 af$ = "afffff"
 PUT #1, 1, af$
 CLOSE #1
+
+COLOR 15
+acc$ = menu$("VGA", 150, 100, 390, 250, "YOUR VGA SCREEN MODE WILL NOW BE ANALYSED.", "OK.", 20000, .2, 1, 3, 0)
+FOR i = 0 TO 500 STEP 16
+FOR j = 0 TO 15
+CIRCLE (320, 240), i + j, j
+NEXT
+NEXT
   'time speed++++++++++++++++++++++++
 FOR i = 0 TO 63 STEP 2
 FOR j = 0 TO 15
@@ -179,7 +178,9 @@ NEXT
 NEXT
 CLS
 COLOR 15
-PRINT "VGA Screen test complete."
+GOSUB setdefault
+GOSUB setcolors
+acc$ = menu$("VGA", 150, 100, 390, 250, "VGA SCREEN TEST COMPLETE.", "OK.", 20000, .2, 1, 3, 0)
 click2
 
 '--------------------------VGA Screen test complete--------------------------
@@ -224,18 +225,19 @@ IF zx% = 5 THEN GOTO opt5
 '================================Option 3 HELP===============================
 opt3: expand "HELP", 25, 5, 5, 4, 11, 38, 21000, 0
 frf = FREEFILE
-OPEN "B", #1, "help.hlp"
+OPEN "B", #frf, "help.hlp"
 VIEW PRINT 5 TO 27
 FOR i = 1 TO LOF(frf)
-  SEEK #1, i
-  zz$ = INPUT$(1, #1)
+  SEEK #frf, i
+  zz$ = INPUT$(1, #frf)
   IF (zz$ = CHR$(9) OR zz$ = CHR$(10) OR zz$ = CHR$(13)) OR (ASC(zz$) > 31 AND ASC(zz$) < 127) THEN PRINT zz$;
 k$ = INPUT$(1)
 NEXT
 lns = 0
 k$ = INPUT$(1)
+CLOSE #frf
 opt31: GOSUB sclear
-CLEAR
+ERASE cps$, option$, optionx
 GOTO main
 '----------------------------Option 3 complete-------------------------------
 
@@ -245,7 +247,7 @@ expand "WELCOME MY FRIENDS, I, SUBHAJIT SAHU INVITE YOU TO THE WORLD OF", 3, 100
 expand "DRAWING PICTURES IN MY NEW PICTURE CREATOR. HAVE FUN.", 3, 150, 2, 1, 9, 9, 21000, 0
 k$ = INPUT$(1)
 GOSUB sclear
-CLEAR
+ERASE cps$, option$, optionx
 GOTO main
 '-----------------------------Option 4 complete------------------------------
 
@@ -254,13 +256,14 @@ opt5: acc$ = menu$("EXIT", 150, 100, 390, 250, "ARE YOU SURE YOU WANT TO EXIT TO
 IF acc$ = "YES" THEN
 SYSTEM
 ELSE
-CLEAR
+ERASE cps$, option$, optionx
 GOTO main
 END IF
 '------------------------------Option 5 complete-----------------------------
 
 '=======================Option 1 Create a picture============================
-opt1: CLS
+opt1: ERASE cps$, option$, optionx
+CLS
 GOSUB setdefault
 GOSUB setcolors
 ERASE cps$
@@ -276,132 +279,201 @@ option$(0) = "CREATE A PICTURE": optionx%(0) = 240
 option$(1) = "CREATE A PICTURE PROJECT": optionx%(1) = 200
 option$(2) = "BACK": optionx%(2) = 320
 zx% = mainmenu%("CREATE A PICTURE", 9, 0, 200, 13, 0, 80, 115, 400, 7, 6)
-GOSUB sclear
+IF (zx% = 3) THEN GOSUB sclear
 ERASE option$, optionx%, cps$
 IF zx% = 1 THEN GOTO opt11
 IF zx% = 2 THEN GOTO opt12
 IF zx% = 3 THEN GOTO main
-opt11: file$ = menu$("FILE NAME", 50, 50, 400, 200, "WHAT IS THE FILE NAME#", "OK.", 21000, 0, 12, 13, 1)
+opt11: file$ = menu$("FILE NAME", 50, 50, 400, 200, "WHAT IS THE FILE NAME#", "OK.", 21000, 0, 8, 13, 1)
+IF file$ = "esc" THEN GOTO opt1
+IF LEN(file$) < 4 THEN GOTO opt11
 file$ = LEFT$(file$, LEN(file$) - 3)
+GOSUB setcolors
+PALETTE 0, 65536 * 9 + 256 * 3 + 15
 ld
+adfg: file$ = "aaaa"
+GOSUB setcolors
 CLS
-cursorx = 280
+SCREEN 12
+opte: cursorx = 280
 cursory = 170
+clr% = 1
 nullify
-CLOSE #1
-OPEN "O", #1, "ram.sys"
-CLOSE #1
-OPEN "B", #1, "ram.sys"
-afg$ = CHR$(0)
-PUT #1, position(496, 396), afg$
-CLOSE #1
+
+rate% = 1
 tools$ = "pencil:1"
 win file$, 14
+GOSUB cursors
+
 cfff: k$ = INKEY$
+
+
+insst = insst + tadd%
+IF insst > 63000 THEN
+VIEW SCREEN (545, 150)-(635, 350)
+insst = 0
+CLS
+VIEW
+END IF
+IF (insst MOD 1000 = 0) THEN
+ VIEW SCREEN (545, 150)-(635, 350)
+ bi = randnum(1, 359)
+ ij = bi MOD 36
+ IF ij > 18 THEN iij = 18 - ij ELSE iij = ij
+ j = randnum(0, 30)
+ CIRCLE (590, 200), j, 10, , , ((iij / 18))
+ VIEW
+ END IF
+
+
+
   SELECT CASE k$
     
+     CASE "+"
+     rate% = rate% + 1
+     IF rate% > 20 THEN rate% = 20
+     status "CURSOR MOVEMENT RATE : " + STR$(rate%), 15
+     CASE "-"
+     rate% = rate% - 1
+     IF rate% < 1 THEN rate% = 1
+     status "CURSOR MOVEMENT RATE : " + STR$(rate%), 15
+    
+     CASE "\"
+     zz$ = tools$
+     status "Selecting cursor : " + STR$(((cur% + 1) MOD 10) + 1), 15
+     tools$ = nospc$("pencil:" + STR$((cur% + 1) MOD 10))
+     GOSUB cursors
+     tools$ = zz$
+
      CASE CHR$(0) + CHR$(up)
+     GOSUB putscreen
+     cursory = cursory - rate%
+     IF cursory < 0 THEN cursory = 0
+IF (etr% = 1 OR pens% = 1) THEN LINE (realx(cursorx), realy(cursory))-(realx(cursorx), realy(cursory) + rate%), clr%
+GOSUB getscreen
+GOSUB cursors
+
+     CASE CHR$(0) + CHR$(down)
+     GOSUB putscreen
+     cursory = cursory + rate%
+     IF cursory > 386 THEN cursory = 386
+IF (etr% = 1 OR pens% = 1) THEN LINE (realx(cursorx), realy(cursory))-(realx(cursorx), realy(cursory) - rate%), clr%
+GOSUB getscreen
+GOSUB cursors
     
-     rub realx(cursorx - 10), realy(cursory - 10), realx(cursorx + 10), realy(cursory + 10)
-     disp cursorx - 10, cursory - 10, cursorx + 10, cursory + 10
-     PUT (realx(cursorx - 20), realy(cursory - 20)), varea
-         cursory = cursory - .5
-         IF cursory < 0 THEN cursory = 0
-     GET (realx(cursorx - 20), realy(cursory - 20))-(realx(cursorx + 20), realy(cursory + 20)), varea
-     getit cursorx, cursory, cursorx, cursory
-     tlpencil etr%
-     
-      CASE CHR$(0) + CHR$(down)
+     CASE CHR$(0) + CHR$(left)
+     GOSUB putscreen
+     cursorx = cursorx - rate%
+     IF cursorx < 0 THEN cursorx = 0
+IF (etr% = 1 OR pens% = 1) THEN LINE (realx(cursorx), realy(cursory))-(realx(cursorx) + rate%, realy(cursory)), clr%
+GOSUB getscreen
+GOSUB cursors
     
-     rub realx(cursorx - 10), realy(cursory - 10), realx(cursorx + 10), realy(cursory + 10)
-     PUT (realx(cursorx - 20), realy(cursory - 20)), varea
-         cursory = cursory + .5
-         IF cursory > 386 THEN cursory = 386
-     GET (realx(cursorx - 20), realy(cursory - 20))-(realx(cursorx + 20), realy(cursory + 20)), varea
-     getit cursorx, cursory, cursorx, cursory
-     tlpencil etr%
-  
-   CASE CHR$(0) + CHR$(left)
+     CASE CHR$(0) + CHR$(right)
+     GOSUB putscreen
+     cursorx = cursorx + rate%
+     IF cursorx > 496 THEN cursorx = 496
+IF (etr% = 1 OR pens% = 1) THEN LINE (realx(cursorx), realy(cursory))-(realx(cursorx) - rate%, realy(cursory)), clr%
+GOSUB getscreen
+GOSUB cursors
     
-     rub realx(cursorx - 10), realy(cursory - 10), realx(cursorx + 10), realy(cursory + 10)
-     PUT (realx(cursorx - 20), realy(cursory - 20)), varea
-         cursorx = cursorx - .5
-         IF cursory < 0 THEN cursory = 0
-     GET (realx(cursorx - 20), realy(cursory - 20))-(realx(cursorx + 20), realy(cursory + 20)), varea
-     getit cursorx, cursory, cursorx, cursory
-     tlpencil etr%
-  
-   CASE CHR$(0) + CHR$(right)
-  
-   rub realx(cursorx - 10), realy(cursory - 10), realx(cursorx + 10), realy(cursory + 10)
-   PUT (realx(cursorx - 20), realy(cursory - 20)), varea
-   cursorx = cursorx + .5
-   IF cursory > 496 THEN cursory = 496
-   GET (realx(cursorx - 20), realy(cursory - 20))-(realx(cursorx + 20), realy(cursory + 20)), varea
-   getit cursorx, cursory, cursorx, cursory
-   tlpencil etr%
-  
-   CASE CHR$(backspc)
-  
-   pens% = (pens% + 1) MOD 2
-   IF pens% = 0 THEN status "PEN UP", 7 ELSE status "PEN DOWN", 7
+     CASE CHR$(backspc)
+     pens% = (pens% + 1) MOD 2
+     IF pens% = 0 THEN status "PEN UP", 7 ELSE status "PEN DOWN", 7
   
    CASE CHR$(enter)
-  
+   GOSUB putscreen
    IF tools$ <> "" THEN
       tzs$ = LEFT$(tools$, 4)
-     
+      str% = pens%
+      pens% = 1
       SELECT CASE tzs$
+     
       CASE "penc"
       LINE (realx(cursorx), realy(cursory))-(realx(cursorx), realy(cursory)), clr%
-      GET (realx(cursorx - 10), realy(cursory - 10))-(realx(cursorx + 10), realy(cursory + 10)), varea
-      tlpencil 1
-      getit cursorx, cursory, cursorx, cursory
+      GOSUB getscreen
+     
+      CASE "rubb"
+      rub realx(cursorx + 2), realy(cursory + 4), realx(cursorx + 18), realy(cursory + 12)
+      GOSUB getscreen
+     
       CASE "brus"
-      str% = pens%
-      pens% = 1
+      VIEW SCREEN (42, 52)-(538, 438)
       tlbrush
-      pens% = str%
+      VIEW
+      GOSUB getscreen
+     
       CASE "line"
-      str% = pens%
-      pens% = 1
       tlline
-      pens% = str%
+      GOSUB putscreen
+      VIEW SCREEN (42, 52)-(538, 438)
+      linez realx(cursorx), realy(cursory), realx(hx1% * 1!), realy(hy1% * 1!), th% * 1!, clr%
+      VIEW
+      GOSUB getscreen
+     
       CASE "rect"
-      str% = pens%
-      pens% = 1
       tlrectangle
-      pens% = str%
+      GOSUB putscreen
+      thk = VAL(RIGHT$(tools$, 1))
+      VIEW SCREEN (42, 52)-(538, 438)
+      IF (thk = 1) THEN LINE (realx(cursorx), realy(cursory))-(realx(hx1% * 1!), realy(hy1% * 1!)), clr%, B ELSE LINE (realx(cursorx), realy(cursory))-(realx(hx1% * 1!), realy(hy1% * 1!)), clr%, BF
+      VIEW
+      GOSUB getscreen
+     
       CASE "circ"
-      str% = pens%
-      pens% = 1
       tlcircle (0)
-      pens% = str%
+      GOSUB putscreen
+      VIEW SCREEN (42, 52)-(538, 438)
+      CIRCLE (realx(cursorx), realy(cursory)), rad% * 1!, clr%, , , rat!
+      VIEW
+      GOSUB getscreen
+     
       CASE "oval"
-      str% = pens%
-      pens% = 1
       tlcircle (1)
-      pens% = str%
+      GOSUB putscreen
+      VIEW SCREEN (42, 52)-(538, 438)
+      CIRCLE (realx(cursorx), realy(cursory)), rad% * 1!, clr%, , , rat!
+      VIEW
+      GOSUB getscreen
+     
       CASE "spra"
-      str% = pens%
-      pens% = 1
+      VIEW SCREEN (42, 52)-(538, 438)
       tlspray
-      pens% = str%
+      VIEW
+      GOSUB getscreen
       CASE ELSE
       END SELECT
-   
+      pens% = str%
+      GOSUB cursors
     END IF
    
-    IF (spread$ <> "") THEN tlsprdln
-    IF (objs1$ <> "") THEN obj1p objs1$, cursorx, cursory
-    IF (userobj$ <> "") THEN obj2d userobj$, cursorx, cursory, 1, 1
-
-   CASE CHR$(27)
-   GOTO cree
+    IF (obj1s$ <> "") THEN
+    VIEW SCREEN (42, 52)-(538, 438)
+    obj1p obj1s$, realx(cursorx), realy(cursory)
+    VIEW
+    GOSUB getscreen
+    GOSUB cursors
+    ELSEIF (userobj$ <> "") THEN
+    VIEW SCREEN (42, 52)-(538, 438)
+    obj2d userobj$, realx(cursorx), realy(cursory), 1, 1
+    VIEW
+    GOSUB getscreen
+    GOSUB cursors
+    END IF
+    CASE CHR$(27)
+    acc$ = menu$("EXIT", 150, 100, 390, 250, "ARE YOU SURE YOU WANT TO EXIT TO MAIN MENU ", "YES.NO.", 20000, .2, 1, 3, 0)
+   IF acc$ = "YES" THEN
+   GOTO main
+   ELSE
+   GOSUB putscreen
+   END IF
+   
   
    CASE CHR$(0) + CHR$(kf1)
-   'savefile
-  
+   GOSUB putscreen
+   save "PIC\" + file$ + ".pic", 49
+   cursor cursorx, cursory, clr%, cur%
+
    CASE CHR$(0) + CHR$(kf2)
    colour
   
@@ -414,6 +486,7 @@ cfff: k$ = INKEY$
 
    CASE CHR$(0) + CHR$(kf4)
    tool
+   GOSUB cursors
   
    CASE CHR$(0) + CHR$(kf5)
    obj1
@@ -422,23 +495,21 @@ cfff: k$ = INKEY$
    obj2
   
    CASE CHR$(0) + CHR$(kf7)
+   GOSUB putscreen
    text
-  
-   CASE CHR$(0) + CHR$(kf8)
-   sprdlns
-  
+   GOSUB putscreen
+   word txt$, xc%, yc%, thk%, size%, cc%, sp%, 21000, 0
+   GOSUB getscreen
+   cursor cursorx, cursory, clr%, cur%
    CASE ELSE
    
     END SELECT
 GOTO cfff
-
-
-      
-
-
 cree:
-opt12:
 
+opt12: acc$ = menu$("DEMO VERSION", 150, 100, 390, 250, "CREATING A PICTURE PROJECT IS UNAVAILABLE IN DEMO VERSION", "OK.", 20000, .2, 1, 3, 0)
+CLS
+GOTO opt1
 
 
 
@@ -458,13 +529,26 @@ option$(0) = "LOAD A PICTURE": optionx%(0) = 240
 option$(1) = "LOAD A PICTURE PROJECT": optionx%(1) = 200
 option$(2) = "BACK": optionx%(2) = 320
 zx% = mainmenu%("LOAD A PICTURE", 9, 0, 200, 13, 0, 80, 115, 400, 7, 6)
-GOSUB sclear
+IF (zx% = 3) THEN GOSUB sclear
 ERASE option$, optionx%, cps$
 IF zx% = 1 THEN GOTO opt21
 IF zx% = 2 THEN GOTO opt22
 IF zx% = 3 THEN GOTO main
-opt21:
-opt22:
+opt21: acc$ = menu$("FILE NAME", 150, 100, 390, 250, "ENTER THE NAME OF FILE FILE WHICH YOU WANT TO LOAD", "OK.", 20000, .2, 1, 3, 1)
+file$ = LEFT$(acc$, LEN(acc$) - 3)
+CLS
+'GOSUB loadclrs
+win file$, 14
+file$ = "PIC\" + file$ + ".pic"
+GOSUB setcolors
+load file$, 49, 42, 52
+GOSUB getscreen
+GOTO opte
+
+opt22: acc$ = menu$("DEMO VERSION", 150, 100, 390, 250, "LOADING A PICTURE PROJECT IS UNAVAILABLE IN DEMO VERSION", "OK.", 20000, .2, 1, 3, 0)
+CLS
+GOTO opt2
+
 
 
 
@@ -532,38 +616,71 @@ GOSUB setdefault
 GOSUB setcolors
 RETURN
 
-DATA 0,0,0, 0,0,43, 0,43,0, 0,43,43, 43,0,0, 43,0,43, 43,43,0, 43,43,43, 10,10,10, 20,20,63, 20,63,20, 20,63,63, 63,20,20, 63,20,63, 63,63,20, 63,63,63
+getscreen: GET (42, 52)-(100, 438), iarea1
+GET (101, 52)-(200, 438), iarea2
+GET (201, 52)-(300, 438), iarea3
+GET (301, 52)-(400, 438), iarea4
+GET (401, 52)-(500, 438), iarea5
+GET (501, 52)-(538, 438), iarea6
+RETURN
+putscreen: VIEW SCREEN (42, 52)-(538, 438)
+CLS
+PUT (42, 52), iarea1
+PUT (101, 52), iarea2
+PUT (201, 52), iarea3
+PUT (301, 52), iarea4
+PUT (401, 52), iarea5
+PUT (501, 52), iarea6
+VIEW
+RETURN
 
+cursors:  IF LEFT$(tools$, 6) = "pencil" THEN
+cur% = VAL(RIGHT$(tools$, 1))
+     IF cur% = 0 THEN cur% = 10
+     END IF
+     IF LEFT$(tools$, 6) = "rubber" THEN cur% = 11
+     cursor cursorx, cursory, clr%, cur%
+     RETURN
+
+saveclrs: fr = FREEFILE              '''fff$
+   ips = 1
+   OPEN "O", #fr, fff$
+   CLOSE #fr
+   OPEN "B", #fr, fff$
+   FOR i1 = 0 TO 15
+   FOR i2 = 0 TO 2
+   ad$ = CHR$(clrs(i1, i2))
+   SEEK #fr, ips
+   PUT #fr, ips, ad$
+   ips = ips + 1
+   NEXT
+   NEXT
+   CLOSE #fr
+RETURN
+
+loadclrs: fr = FREEFILE
+ips = 1
+OPEN "B", #fr, file$
+   FOR i1 = 0 TO 15
+   FOR i2 = 0 TO 2
+   SEEK #fr, ips
+   ad$ = INPUT$(1, #fr)
+   IF ad$ = "" THEN clrs(i1, i2) = 0 ELSE clrs(i1, i2) = ASC(ad$)
+   ips = ips + 1
+   NEXT
+   NEXT
+   CLOSE #fr
+RETURN
 
 errs: RESUME NEXT
+
+DATA 0,0,0, 0,0,43, 0,43,0, 0,43,43, 43,0,0, 43,0,43, 43,43,0, 43,43,43, 10,10,10, 20,20,63, 20,63,20, 20,63,63, 63,20,20, 63,20,63, 63,63,20, 63,63,63
+
 '============================================================================
 
 REM $STATIC
 DEFSNG A-B, D-Z
-SUB area (x1, y1, x2, y2)
-SHARED screens, scxx1, scxx2, scyy1, scyy2
-scxx1 = x1: scxx2 = x2: scyy1 = y1: scyy2 = y2
-z = FREEFILE
-FOR i% = z + 1 TO z + screens
-OPEN "B", #i%, nospc$("scr" + STR$(i% - z) + ".scr")
-NEXT
-ps = 1
-as$ = CHR$(0)
-FOR i = x1 TO x2
-FOR j = y1 TO y2
-FOR i1% = z + 1 TO z + screens
-PUT #i1%, ps, as$
-NEXT
-ps = ps + 1
-NEXT
-NEXT
-
-FOR i% = z + 1 TO z + screens
-CLOSE #i%
-NEXT
-END SUB
-
-SUB char (s AS STRING, x AS INTEGER, y AS INTEGER, t AS INTEGER, p AS INTEGER, c AS INTEGER)
+SUB char (s AS STRING, x, y, t, p, c AS INTEGER)
 SELECT CASE s$
 CASE "A"
 linez x, y + 9 * p, x, y + 2 * p, t, c
@@ -917,10 +1034,10 @@ END SUB
 
 SUB click1
 FOR i% = 2000 TO 6000 STEP 500
-SOUND i%, .05
+SOUND i%, .15
 NEXT
 FOR i% = 6000 TO 2000 STEP -500
-SOUND i%, .05
+SOUND i%, .15
 NEXT
 END SUB
 
@@ -1057,24 +1174,14 @@ SHELL "del ram.pth"
 currdir$ = RIGHT$(z$, LEN(z$) - 14)
 END FUNCTION
 
-SUB cursor (x AS SINGLE, y AS SINGLE, c%, a%, p%)
-VIEW SCREEN (42, 22)-(538, 438)'------------Possible error
+SUB cursor (x AS SINGLE, y AS SINGLE, c%, a%)
+VIEW SCREEN (42, 52)-(538, 438)'------------Possible error
 tx1 = realx(x)
 ty1 = realy(y)
-SELECT CASE p%
-CASE 1
-LINE (tx1, ty1)-(tx1, ty1), c%
-savedot x, y, c%
-CASE 0
-disp x, y, x, y
-CASE ELSE
-END SELECT
-CLOSE #z
 c1% = (c% + 1) MOD 16
 IF c1% = 0 THEN c1% = 1
 c2% = (c1% + 1) MOD 16
 IF c2% = 0 THEN c2% = 1
-disp x - 8, y - 8, x + 8, y + 8
 SELECT CASE a%
 CASE 1
 LINE (tx1 - 1, ty1 - 1)-(tx1 + 1, ty1 - 1), c1%
@@ -1154,9 +1261,11 @@ LINE (tx1, ty1 - 6)-(tx1, ty1 - 6), c2%
 LINE (tx1 - 2, ty1 + 4)-(tx1 + 2, ty1 + 4), c2%
 LINE (tx1 - 1, ty1 + 5)-(tx1 + 1, ty1 + 5), c2%
 LINE (tx1, ty1 + 6)-(tx1, ty1 + 6), c2%
+CASE 11
+pnt tx1 + 2, ty1 + 4, tx1 + 18, ty1 + 12, 15
 CASE ELSE
 END SELECT
-VIEW SCREEN (0, 0)-(640, 480)
+VIEW
 END SUB
 
 FUNCTION dirs$ (s AS STRING)
@@ -1172,21 +1281,6 @@ dirs: CLOSE #a
 KILL "ram.pth"
 dirs$ = c$
 END FUNCTION
-
-SUB disp (xx1 AS SINGLE, yy1 AS SINGLE, xx2 AS SINGLE, yy2 AS SINGLE)
-z = FREEFILE
-OPEN "B", #z, "ram.sys"
-FOR i = yy1 TO yy2 STEP .5
-FOR j = xx1 TO xx2 STEP .5
-ips2 = position(i, j)
-SEEK #z, ips2
-as$ = INPUT$(1, #z)
-cl = ASC(as$) - 65
-LINE (realx(xx), realy(yy))-(realx(xx), realy(yy)), cl
-NEXT
-NEXT
-CLOSE #z
-END SUB
 
 FUNCTION drawmenu$
 click1
@@ -1270,7 +1364,7 @@ SHELL "dir *." + a$ + ">ram.pth"
 b = FREEFILE
 OPEN "I", #b, "ram.pth"
 FOR i = 1 TO 2 STEP 0
-IF EOF(1) THEN GOTO fils
+IF EOF(b) THEN GOTO fils
 LINE INPUT #b, z$
 IF (MID$(z$, 14, 5) <> "<DIR>" AND MID$(z$, 11, 4) <> "file" AND LEFT$(z$, 11) <> " Volume in " AND LEFT$(z$, 12) <> " Volume Seri" AND LEFT$(z$, 13) <> " Directory of") THEN c$ = c$ + LEFT$(z$, 12) + s$
 NEXT
@@ -1279,22 +1373,7 @@ KILL "ram.pth"
 fzl$ = c$
 END FUNCTION
 
-SUB getit (xx1 AS SINGLE, yy1 AS SINGLE, xx2 AS SINGLE, yy2 AS SINGLE)
-z = FREEFILE
-OPEN "B", #z, "ram.sys"
-FOR i = yy1 TO yy2 STEP .5
-FOR j = xx1 TO xx2 STEP .5
-ips2 = position(i, j)
-abc = POINT(realx(i), realy(j))
-as$ = CHR$(65 + abc)
-SEEK #z, ips2
-PUT #z, ips2, as$
-NEXT
-NEXT
-CLOSE #z
-END SUB
-
-SUB intensity (r%, g%, b%)
+SUB intensity (r%, G%, b%)
 SHARED clr%, red%, green%, blue%
 click1
 pnt 10, 75, 30, 85, clr%
@@ -1325,12 +1404,12 @@ r% = r% - 1
 IF r% < 0 THEN r% = 0
 GOSUB sinte1
 CASE CHR$(0) + CHR$(home)
-g% = g% + 1
-IF g% > 63 THEN g% = 63
+G% = G% + 1
+IF G% > 63 THEN G% = 63
 GOSUB sinte1
 CASE CHR$(0) + CHR$(endk)
-g% = g% - 1
-IF g% < 0 THEN g% = 0
+G% = G% - 1
+IF G% < 0 THEN G% = 0
 GOSUB sinte1
 CASE CHR$(0) + CHR$(pageup)
 b% = b% + 1
@@ -1344,12 +1423,12 @@ CASE ELSE
 END SELECT
 LOOP
 GOTO sinte
-sinte1: PALETTE clr%, 65536 * b% + 256 * g% + r%
-status "RED - " + STR$(r%) + " GREEN - " + STR$(g%) + " BLUE - " + STR$(b%), 1
+sinte1: PALETTE clr%, 65536 * b% + 256 * G% + r%
+status "RED - " + STR$(r%) + " GREEN - " + STR$(G%) + " BLUE - " + STR$(b%), 1
 RETURN
 sinte: IF k$ = CHR$(enter) THEN
 blue% = b%
-green% = g%
+green% = G%
 red% = r%
 END IF
 linex 0, 70, 40, 70, 3, 14
@@ -1357,24 +1436,33 @@ linex 0, 90, 40, 90, 3, 14
 liney 1, 70, 1, 90, 3, 14
 liney 40, 70, 40, 90, 3, 14
 IF k$ = CHR$(enter) THEN status "COLOUR INTENSITY SELECTED.", 1 ELSE status "COLOUR INTENSITY NOT SELECTED.", 1
+click3
 END SUB
 
 SUB ld
 CLS
-df$ = "A"
 expand "LOADING . . .", 25, 20, 6, 4, 15, 38, 21000, 0
-z = FREEFILE
-OPEN "B", #z, "ram.sys"
-yydf$ = STRING$(387 * 2, df$)
-SEEK #z, 1
-FOR xx = 0 TO 496 STEP .5
-ips = position(xx, yy)
-PUT #z, , yydf$
-LINE (0, 300)-(xx, 300), 10
+VIEW SCREEN (190, 140)-(410, 360)
+FOR i = 1 TO 359
+grad = (359 * (22 / 7)) / 180
+ij = i MOD 72
+IF ij > 36 THEN iij = 36 - ij ELSE iij = ij
+FOR j = 1 TO 100
+CIRCLE (300, 250), j, 10, 0, grad, ((iij / 36))
 NEXT
+CIRCLE (300, 250), 101, 0, 0, grad, ((iij / 36))
+CIRCLE (300, 250), 100, 0, 0, grad, ((iij / 36))
+CIRCLE (300, 250), 102, 0, 0, grad, ((iij / 36))
+CIRCLE (300, 250), 99, 0, 0, grad, ((iij / 36))
+CIRCLE (300, 250), 103, 0, 0, grad, ((iij / 36))
+
+PALETTE 10, 65536 * INT(i / 10) + 256 * INT((i / 360) * 63) + INT(63 - ((i / 360) * 63))
+
+NEXT
+VIEW
 END SUB
 
-SUB linex (hx1 AS INTEGER, hy1 AS INTEGER, hx2 AS INTEGER, hy2 AS INTEGER, t AS INTEGER, c AS INTEGER)
+SUB linex (hx1, hy1, hx2, hy2, t, c AS INTEGER)
 IF t >= 1 THEN LINE (hx1, hy1)-(hx2, hy2), c
 FOR i = 2 TO t
 z% = FIX(i / 2)
@@ -1385,7 +1473,7 @@ LINE (hx1, hy1 + z%)-(hx2, hy2 + z%), c
 NEXT
 END SUB
 
-SUB liney (hx1 AS INTEGER, hy1 AS INTEGER, hx2 AS INTEGER, hy2 AS INTEGER, t AS INTEGER, c AS INTEGER)
+SUB liney (hx1, hy1, hx2, hy2, t, c AS INTEGER)
 IF t >= 1 THEN LINE (hx1, hy1)-(hx2, hy2), c
 FOR i = 2 TO t
 z% = FIX(i / 2)
@@ -1396,8 +1484,60 @@ LINE (hx1 + z%, hy1)-(hx2 + z%, hy2), c
 NEXT
 END SUB
 
-SUB linez (hx1 AS INTEGER, hy1 AS INTEGER, hx2 AS INTEGER, hy2 AS INTEGER, t AS INTEGER, c AS INTEGER)
+SUB linez (hx1, hy1, hx2, hy2, t, c AS INTEGER)
 IF ABS(hx1 - hx2) > ABS(hy1 - hy2) THEN linex hx1, hy1, hx2, hy2, t, c ELSE liney hx1, hy1, hx2, hy2, t, c
+END SUB
+
+SUB load (f$, io%, x%, y%)
+fr = FREEFILE      'ips=49
+OPEN "B", #fr, f$
+
+VIEW SCREEN (42, 52)-(538, 438)
+ips = 49
+SEEK #fr, ips
+ad1 = ASC(INPUT$(1, #fr))
+ips = ips + 1
+SEEK #fr, ips
+ad2 = ASC(INPUT$(1, #fr))
+ips = ips + 1
+xmin = ad1 + ad2
+
+SEEK #fr, ips
+ad1 = ASC(INPUT$(1, #fr))
+ips = ips + 1
+SEEK #fr, ips
+ad2 = ASC(INPUT$(1, #fr))
+ips = ips + 1
+xmax = ad1 + ad2
+
+SEEK #fr, ips
+ad1 = ASC(INPUT$(1, #fr))
+ips = ips + 1
+SEEK #fr, ips
+ad2 = ASC(INPUT$(1, #fr))
+ips = ips + 1
+ymin = ad1 + ad2
+
+SEEK #fr, ips
+ad1 = ASC(INPUT$(1, #fr))
+ips = ips + 1
+SEEK #fr, ips
+ad2 = ASC(INPUT$(1, #fr))
+ips = ips + 1
+ymax = ad1 + ad2
+yszz = ymax - ymin
+
+FOR xx = xmin TO xmax
+FOR yy = ymin TO ymax
+SEEK #fr, position(49, (xx - xmin), (yy - ymin), yszz)
+ad = ASC(INPUT$(1, #fr))
+LINE (realx(xx), realy(yy))-(realx(xx), realy(yy)), ad
+
+NEXT
+NEXT
+
+CLOSE #fr
+VIEW
 END SUB
 
 FUNCTION mainmenu% (h$, hc%, u%, os%, oc%, bx1%, by1%, bx2%, by2%, bc%, bt%)
@@ -1429,10 +1569,10 @@ NEXT
 expand "INTELLIGENT MINDS CORPORATION", 380, 450, 2, 1, 2, 9, 21000, 0
 '//////////////////////////////Menu created
 
-linez bx1%, by1%, bx2%, by1%, 5, bc%   '+++++++Drawing text box
-linez bx2%, by1%, bx2%, by2%, 5, bc%
-linez bx2%, by2%, bx1%, by2%, 5, bc%
-linez bx1%, by2%, bx1%, by1%, 5, bc%
+linez bx1% * 1!, by1% * 1!, bx2% * 1!, by1% * 1!, 5, bc%'+++++++Drawing text box
+linez bx2% * 1!, by1% * 1!, bx2% * 1!, by2% * 1!, 5, bc%
+linez bx2% * 1!, by2% * 1!, bx1% * 1!, by2% * 1!, 5, bc%
+linez bx1% * 1!, by2% * 1!, bx1% * 1!, by1% * 1!, 5, bc%
 PAINT ((bx1% + bx2%) / 2, (by1% + by2%) / 2), 15, bc%
 PALETTE 15, 65536 * 2 + 256 * 7 + 2
 '////////////////////////////Working menu
@@ -1495,7 +1635,7 @@ tx1% = chpr% MOD bchp%
 ty1% = FIX(chpr% / bchp%)
 tx1% = bxas% + (tx1% * 10)
 ty1% = bxad% + (ty1% * 15)
-char chp$, tx1%, ty1%, 2, 1, bt%
+char chp$, tx1% * 1!, ty1% * 1!, 2, 1, bt%
 click2
 END IF
 LOOP
@@ -1527,16 +1667,16 @@ NEXT
 '////////////////////Opening window
 word s$, hx1%, hy1%, 3, 2, c%, 20, 21000, 0
 ty1% = hy1% + 25
-linez hx1%, ty1%, hx2%, ty1%, 4, (c% + 1) MOD 16
+linez hx1% * 1!, ty1% * 1!, hx2% * 1!, ty1% * 1!, 4, (c% + 1) MOD 16
 sy1% = ty1% + 5
 sx2% = hx1% + 2 * FIX(ABS(hx2% - hx1%) / 3)
 tc% = (c% + 2) MOD 16
-linez hx1%, sy1%, sx2%, sy1%, 6, tc%
+linez hx1% * 1!, sy1% * 1!, sx2% * 1!, sy1% * 1!, 6, tc%
 dy1% = sy1% + 3
 FOR i% = dy1% TO hy2%
-linez hx1%, sy1%, hx1%, i%, 2, tc%
-linez hx2%, sy1%, hx2%, i%, 2, tc%
-linez hx1%, i%, hx2%, i%, 2, tc%
+linez hx1% * 1!, sy1% * 1!, hx1% * 1!, i% * 1!, 2, tc%
+linez hx2% * 1!, sy1% * 1!, hx2% * 1!, i% * 1!, 2, tc%
+linez hx1% * 1!, i% * 1!, hx2% * 1!, i% * 1!, 2, tc%
 LINE (hx1% + 1, i%)-(hx2% - 1, i%), 0
 SOUND f% / ((i% MOD 2) + 1), tt%
 NEXT
@@ -1553,7 +1693,7 @@ ag$ = MID$(t$, i%, 1)
 cx1% = cha + (i% MOD chpx) * 10
 cy1% = chb + FIX(i% / chpx) * 15
 click2
-char ag$, cx1%, cy1%, 2, 1, tc%
+char ag$, cx1% * 1!, cy1% * 1!, 2, 1, tc%
 ff = f% / ((i% MOD 2) + 1)
 IF ff > f% THEN ff = f%
 SOUND ff, tt%
@@ -1567,10 +1707,10 @@ cx1% = hx1% + 5
 cy2% = hy2% - 25
 cx2% = hx2% - 5
 ibc% = (c% + 10) MOD 16
-linez cx1%, cy1%, cx2%, cy1%, 4, ibc%
-linez cx2%, cy1%, cx2%, cy2%, 4, ibc%
-linez cx2%, cy2%, cx1%, cy2%, 4, ibc%
-linez cx1%, cy2%, cx1%, cy1%, 4, ibc%
+linez cx1% * 1!, cy1% * 1!, cx2% * 1!, cy1% * 1!, 4, ibc%
+linez cx2% * 1!, cy1% * 1!, cx2% * 1!, cy2% * 1!, 4, ibc%
+linez cx2% * 1!, cy2% * 1!, cx1% * 1!, cy2% * 1!, 4, ibc%
+linez cx1% * 1!, cy2% * 1!, cx1% * 1!, cy1% * 1!, 4, ibc%
 ibc% = (ibc% + 1) MOD 16
 chx1% = cx1% + 3
 chy1% = cy1% + 3
@@ -1591,8 +1731,8 @@ xxx1(i% - 1) = bx1%
 bx2% = inbx + ebs%
 LINE (bx1% + 1, by1%)-(bx2% - 1, by1%), tc%
 LINE (bx1%, by1% + 1)-(bx1%, by2% - 1), tc%
-linez bx2%, by1% + 1, bx2%, by2% - 1, 2, uc%
-linez bx1% + 1, by2%, bx2% - 1, by2%, 2, uc%
+linez bx2% * 1!, by1% + 1!, bx2% * 1!, by2% - 1!, 2, uc%
+linez bx1% + 1!, by2% * 1!, bx2% - 1!, by2% * 1!, 2, uc%
 tx1% = bx1% + 3
 ty1% = by1% + 3
 inbx = bx2% + 5
@@ -1607,11 +1747,13 @@ DO UNTIL k$ = CHR$(27) OR k$ = CHR$(enter)
 k$ = INKEY$
  
 IF k$ = CHR$(backspc) THEN
+  IF ibchs$ <> "" THEN
+  ibchs$ = LEFT$(ibchs$, LEN(ibchs$) - 1)
   ch% = ch% - 1
   chx% = chx1% + (ch% MOD chpx%) * 9
   chy% = chy1% + FIX(ch% / chpx%) * 15
   rub chx%, chy%, chx% + 9, chy% + 12
-  ibchs$ = LEFT$(ibchs$, LEN(ibchs$) - 1)
+  END IF
   click2
 END IF
 
@@ -1622,7 +1764,7 @@ IF k$ <> "" AND k$ <> CHR$(backspc) THEN
   chx% = chx1% + (ch% MOD chpx%) * 9
   chy% = chy1% + FIX(ch% / chpx%) * 15
   IF FIX(ch% / chpx%) <= chpy% THEN
-  char UCASE$(k$), chx%, chy%, 1, 1, ibc%
+  char UCASE$(k$), chx% * 1!, chy% * 1!, 1, 1, ibc%
   click2
   ch% = ch% + 1
   ibchs$ = ibchs$ + k$
@@ -1712,8 +1854,8 @@ xx2% = hx2% + 5
 yy2% = hy2% + 2
 yy1% = hy1% - 2
 FOR i% = yy2% TO yy1% STEP -1
-linez xx1%, i%, xx2%, i%, 3, tc%
-linez xx1%, i%, xx2%, i%, 2, 0
+linez xx1% * 1!, i% * 1!, xx2% * 1!, i% * 1!, 3, tc%
+linez xx1% * 1!, i% * 1!, xx2% * 1!, i% * 1!, 2, 0
 ff = f% / ((i% MOD 2) + 2)
 IF ff > f% THEN ff = f%
 SOUND ff, tt%
@@ -1733,10 +1875,9 @@ nospc$ = add$
 END FUNCTION
 
 SUB nullify
-SHARED spread$, userobj$, return$, tools$, objs1$
+SHARED spread$, userobj$, tools$, objs1$
 spread$ = ""
 userobj$ = ""
-return$ = ""
 tools$ = ""
 objs1$ = ""
 END SUB
@@ -1770,7 +1911,7 @@ numfiles = VAL(LEFT$(z$, 9))
 END FUNCTION
 
 SUB obj1
-SHARED objs1$
+SHARED obj1s$
 click1
 sobj1s: dc$ = objs1$
 tzol% = 1
@@ -2003,7 +2144,7 @@ END SUB
 SUB obj1p (s AS STRING, x AS SINGLE, y AS SINGLE)
 zx1 = x: zy = y
 s1$ = nospc$(s$)
-SELECT CASE s$
+SELECT CASE s1$
 CASE "trees:1"
       FOR i = 3 TO 17 STEP 2                              'pine
       LINE (zx1 + 10, zy)-(zx1 + i, zy + 6), 2
@@ -2139,7 +2280,7 @@ CASE "circuitsymbols:7"
 CASE "circuitsymbols:8"
       LINE (zx1 + 1, zy + 7.5)-(zx1 + 4, zy + 7.5), 4       'ac mains
       LINE (zx1 + 16, zy + 7.5)-(zx1 + 19, zy + 7.5), 4
-      CIRCLE (10, 7.5), 6, 5
+      CIRCLE (zx1 + 10, zy + 7.5), 6, 5
       LINE (zx1 + 6, zy + 7.5)-(zx1 + 8, zy + 5.5), 6
       LINE -(zx1 + 12, zy + 9.5), 6
       LINE -(zx1 + 14, zy + 7.5), 6
@@ -2358,7 +2499,7 @@ IF k$ = CHR$(enter) THEN
 END IF
 GOTO sobj21
 
-sobj22: userobj$ = name$(tzol% - 1)   '********Setting userobj$
+sobj22: userobj$ = names$(tzol% - 1)   '********Setting userobj$
 IF (tzol% MOD tlsppg = 0) THEN
    rub 543, 54, 637, 377
    ts = tzol% - tlsppg + 1
@@ -2412,7 +2553,7 @@ userobj$ = objfile$(tzol% - 1)
 END SUB
 
 SUB obj2d (f$, x AS SINGLE, y AS SINGLE, rx AS SINGLE, ry AS SINGLE)
-VIEW SCREEN (42, 22)-(538, 438)'------------Possible error
+VIEW SCREEN (42, 52)-(538, 438)'------------Possible error
 as1 = 2 * rx
 as2 = 2 * ry
 z = FREEFILE
@@ -2449,7 +2590,7 @@ i = i + 1
 END IF
 LOOP
 CLOSE #z
-VIEW SCREEN (0, 0)-(640, 480)
+VIEW
 END SUB
 
 SUB obj2p (f$, x AS SINGLE, y AS SINGLE)
@@ -2496,14 +2637,14 @@ imagex = c
 imagey = r
 END SUB
 
-3 SUB pnt (tx1 AS INTEGER, ty1 AS INTEGER, tx2 AS INTEGER, ty2 AS INTEGER, c%)
+SUB pnt (tx1 AS INTEGER, ty1 AS INTEGER, tx2 AS INTEGER, ty2 AS INTEGER, c%)
 FOR i% = tx1 TO tx2
 LINE (i%, ty1)-(i%, ty2), c%
 NEXT
 END SUB
 
-FUNCTION position (x AS SINGLE, y AS SINGLE)
-position = (y * 2 * 496) + (2 * x) + 1
+FUNCTION position (add, x, y, ysize)
+position = add + 8 + (x * ysize) + y
 END FUNCTION
 
 FUNCTION randnum (s1 AS SINGLE, s2 AS SINGLE)
@@ -2516,7 +2657,7 @@ realx = x + 42
 END FUNCTION
 
 FUNCTION realy (y AS SINGLE)
-realy = y + 22
+realy = y + 52
 END FUNCTION
 
 SUB rub (hx1 AS INTEGER, hy1 AS INTEGER, hx2 AS INTEGER, hy2 AS INTEGER)
@@ -2525,200 +2666,58 @@ LINE (i%, hy1)-(i%, hy2), 0
 NEXT
 END SUB
 
-SUB savedot (x, y, c%)
-ips = position(x, y)
-ch$ = CHR$(c% + 65)
-z = FREEFILE
-OPEN "B", #z, "ram.sys"
-PUT #z, ips, ch$
-CLOSE #z
-END SUB
-
-SUB scrdot (x%, y%, c%)
-SHARED cscreen, scxx1, scxx2, scyy1, scyy2
-z = FREEFILE
-s$ = nospc$("scr" + STR$(cscreen) + ".scr")
-OPEN "B", #z, s$
-IF (x < 0 OR y < 0) THEN EXIT SUB
-ax = scxx1 + x%
-ay = scyy1 + y%
-IF (ax > scxx2 OR ay > scyy2) THEN EXIT SUB
-ps = ax * (scyy2 - scyy1 + 1) + ay + 1
-as$ = CHR$(c%)
-PUT #z, ps, as$
-CLOSE #z
-END SUB
-
-SUB scrend
-SHARED screens
-FOR i = 1 TO screens
-a$ = nospc$("scr" + STR$(i) + ".scr")
-SHELL "del " + a$
-NEXT
-END SUB
-
-SUB scrgenerate
-SHARED screens, scxx1, scyy1, scxx2, scyy2
-z = FREEFILE
-FOR i% = z + 1 TO z + screens
-OPEN "B", #i%, nospc$("scr" + STR$(i% - z) + ".scr")
-NEXT
-
-ps = 1
-FOR i = scxx1 TO scxx2
-FOR j = scyy1 TO scyy2
-cl = 0
-FOR i1 = z + screens TO z + 1 STEP -1
-SEEK #i1, ps
-a1$ = INPUT$(1, #i1)
-IF a1$ <> "" THEN cc = ASC(a1$)
-IF cc <> 0 THEN cl = cc
-NEXT
-LINE (i, j)-(i, j), cl
-ps = ps + 1
-NEXT
-NEXT
-
-FOR i% = z + 1 TO z + screens
-CLOSE #i%
-NEXT
-END SUB
-
-SUB scrline (x1%, y1%, x2%, y2%, c%)
-SHARED cscreen, scxx1, scxx2, scyy1, scyy2
-z = FREEFILE
-s$ = nospc$("scr" + STR$(cscreen) + ".scr")
-
-OPEN "B", #z, s$
-IF (x1% < 0 OR y1% < 0 OR x2% < 0 OR y2% < 0) THEN EXIT SUB
-
-xx = ABS(x2% - x1%)
-yy = ABS(y2% - y1%)
-FOR iz = 1 TO xx
-rty = FIX((iz * yy) / xx)
-ax = scxx1 + x1% + iz
-ay = scyy1 + y1% + rty
-IF (ax <= scxx2 OR ay <= scyy2) THEN
-ps = ax * (scyy2 - scyy1 + 1) + ay + 1
-as$ = CHR$(c%)
-PUT #z, ps, as$
-END IF
-NEXT
-CLOSE #z
-END SUB
-
-SUB setscr (s%)
-SHARED screens, cscreen
-IF s% > 0 AND s% <= screens THEN cscreen = s%
-END SUB
-
-SUB setscreens (n AS INTEGER)
-SHARED screens
-screens = n
-FOR i% = 1 TO n
-s$ = nospc$("scr" + STR$(i%) + ".scr")
-z = FREEFILE
-OPEN "O", #z, s$
-CLOSE #z
-NEXT
-END SUB
-
-SUB sprdlns
-SHARED spread$
+SUB save (f$, io%)
+fr = FREEFILE
+OPEN "B", #fr, f$
+status "Reading image . . .", 15
 click1
-ssprdlnss: dc$ = spread$
-tzol% = 1
-linex 540, 440, 640, 440, 3, 2
-linex 540, 478, 640, 478, 3, 2
-liney 540, 440, 540, 480, 3, 2
-liney 639, 440, 639, 480, 3, 2
-linex 0, 440, 250, 440, 3, 2
-linex 0, 478, 250, 478, 3, 2
-liney 1, 440, 1, 480, 3, 2
-liney 250, 440, 250, 480, 3, 2
-status "SELECTING SPREAD LINES.", 1
-GOSUB ssprdlns2
-
-DO UNTIL k$ = CHR$(27) OR k$ = CHR$(enter)
-
-k$ = INKEY$
-
-SELECT CASE k$                      '*********Setting tzol%
-  CASE CHR$(0) + CHR$(down)
-  GOSUB ssprdlns3
-  tzol% = tzol% + 1
-  IF tzol% > 4 THEN tzol% = 1
-  GOSUB ssprdlns2
-  CASE CHR$(0) + CHR$(up)
-  GOSUB ssprdlns3
-  tzol% = tzol% - 1
-  IF tzol% < 1 THEN tzol% = 4
-  GOSUB ssprdlns2
-  CASE ELSE
-END SELECT
-
-
-LOOP
-
-
-
-IF k$ = CHR$(27) THEN
-  status "SPREAD LINE NOT SELECTED.", 1
-  spread$ = dc$
+xmin = 500
+ymin = 500
+xmax = 0
+FOR xx = 0 TO 496
+FOR yy = 0 TO 386
+cl = POINT(realx(xx), realy(yy))
+IF (cl <> 0) THEN
+IF (xx < xmin) THEN
+xmin = xx
+ymin = yy
 END IF
-IF k$ = CHR$(enter) THEN
-  status "SPREAD LINE SELECTED - " + UCASE$(spread$), 1
-  rub 254, 444, 536, 476
+IF (xx > xmax) THEN xmax = xx
 END IF
-GOTO ssprdlns1
+NEXT
+NEXT
+fpos = 1
+status "Reading image complete.  Saving image . . . ", 15
+click1
+FOR xx = xmin TO xmax
+FOR yy = 0 TO 386
+cl = POINT(realx(xx), realy(yy))
 
+IF (cl <> 0) THEN
+freq = (yy - ymin) + 32767
+vl1 = INT(freq / 256)
+vl2 = freq - (vl1 * 256)
+a$ = CHR$(vl1) + CHR$(vl2)
+PUT #fr, fpos, a$
+fpos = fpos + 2
+END IF
+NEXT
+NEXT
+FOR i = LOF(fr) TO 1
+SEEK #fr, i
+a$ = INPUT$(1, #fr)
+IF a$ = " " OR a$ = CHR$(0) THEN p = i ELSE EXIT FOR
+NEXT
+OPEN "B", #15, "ram.lvl"
+FOR i = 1 TO p
+SEEK #fr, i
+a$ = INPUT$(1, #fr)
+PUT #15, i, a$
+NEXT
+CLOSE #fr, 15
+status "File saved", 10
+click1
 
-ssprdlns2:     SELECT CASE tzol%
-CASE 1
-spread$ = "normal line"
-CASE 2
-spread$ = "squared line"
-CASE 3
-spread$ = "zizag line"
-CASE 4
-spread$ = "curved line"
-CASE ELSE
-END SELECT
-
-r% = 442 + FIX((tzol% - 1) / 2) * 15
-c% = (tzol% - 1) MOD 2
-c1% = 543 + (c% * 45)
-r1% = r% + 15
-LINE (c1%, r%)-(c1% + 40, r%), 15
-LINE -(c1% + 40, r1%), 15
-LINE -(c1%, r1%), 15
-LINE -(c1%, r%), 15
-status "CHOOSING SPREAD LINE - " + UCASE$(spread$), 1
-RETURN
-ssprdlns3: r% = 442 + FIX((tzol% - 1) / 2) * 20
-c% = (tzol% - 1) MOD 2
-c1% = 543 + (c% * 45)
-r1% = r% + 15
-LINE (c1%, r%)-(c1% + 40, r%), 0
-LINE -(c1% + 40, r1%), 0
-LINE -(c1%, r1%), 0
-LINE -(c1%, r%), 0
-RETURN
-
-ssprdlns1: rub 252, 442, 538, 478
-linex 540, 440, 640, 440, 3, 14
-linex 540, 478, 640, 478, 3, 14
-liney 540, 440, 540, 480, 3, 14
-liney 639, 440, 639, 480, 3, 14
-linex 0, 440, 250, 440, 3, 14
-linex 0, 479, 250, 479, 3, 14
-liney 1, 440, 1, 480, 3, 14
-liney 250, 440, 250, 480, 3, 14
-status "", 0
-GOSUB ssprdlns3
-zzz$ = spread$
-nullify
-spread$ = zzz$
 END SUB
 
 SUB status (s AS STRING, c%)
@@ -2726,29 +2725,22 @@ zz$ = UCASE$(s$)
 rub 4, 442, 247, 476
 FOR i% = 1 TO LEN(zz$)
 IF FIX(i% / 24) > 2 THEN EXIT FOR
-ag$ = UCASE$(MID$(zz$, i%, 1))
+ag$ = MID$(zz$, i%, 1)
 cx1% = 5 + (i% MOD 24) * 10
 cy1% = 445 + FIX(i% / 24) * 15
-char ag$, cx1%, cy1%, 2, 1, c%
+char ag$, cx1% * 1!, cy1% * 1!, 2, 1, c%
 NEXT
 END SUB
 
 SUB text
-SHARED cursorx, cursory, clr%
+SHARED cursorx, cursory, clr%, txt$, xc%, yc%, thk%, size%, cc%, sp%
 click1
 linex 540, 420, 640, 420, 3, 2
 linex 540, 440, 640, 440, 3, 2
 liney 540, 420, 540, 440, 3, 2
 liney 639, 420, 639, 420, 3, 2
-DIM ar1(1000), ar2(1000), ar3(1000), ar4(1000), ar5(1000), ar6(1000)
-GET (100, 40)-(300, 100), ar1
-GET (100, 100)-(300, 150), ar2
-GET (100, 150)-(300, 200), ar3
-GET (100, 200)-(300, 250), ar4
-GET (100, 250)-(200, 300), ar5
-GET (100, 300)-(300, 350), ar6
-rub 100, 40, 300, 100
-txt$ = menu$("TEXT", 100, 40, 300, 350, "ENTER TEXT :", "ENTER.", 21000, 0, 1, 2, 1)
+rub 100, 60, 300, 250
+txt$ = menu$("TEXT", 100, 60, 300, 250, "ENTER TEXT :", "ENTER.", 21000, 0, 1, 2, 1)
 tx$ = ""
 FOR i = 1 TO LEN(txt$)
 zx$ = MID$(txt$, i, 1)
@@ -2758,27 +2750,19 @@ NEXT
 txt$ = tx$
 txt$ = UCASE$(txt$)
 tx$ = ""
-rub 100, 40, 300, 100
-tx$ = menu$("SIZE", 100, 40, 300, 350, "ENTER SIZE (1-10):", "ACCEPT.", 21000, 0, 2, 1, 1)
+rub 100, 60, 300, 250
+tx$ = menu$("SIZE", 100, 60, 300, 250, "ENTER SIZE (1-10):", "ACCEPT.", 21000, 0, 2, 1, 1)
 size% = FIX(VAL(tx$))
-rub 100, 40, 300, 100
-tx$ = menu$("THICKNESS", 100, 40, 300, 350, "ENTER THICKNESS (1-10):", "SURE.", 21000, 0, 15, 2, 1)
+rub 100, 60, 300, 250
+tx$ = menu$("THICKNESS", 100, 60, 300, 250, "ENTER THICKNESS (1-10):", "SURE.", 21000, 0, 15, 2, 1)
 thk% = FIX(VAL(tx$))
 sp% = (size% * 6) + thk% + 1
-rub 100, 40, 300, 100
-tx$ = menu$("SPACING", 100, 40, 300, 350, "ENTER SPACING (1-20):", "PERFECT.", 21000, 0, 15, 2, 1)
+rub 100, 60, 300, 250
+tx$ = menu$("SPACING", 100, 60, 300, 250, "ENTER SPACING (1-20):", "PERFECT.", 21000, 0, 15, 2, 1)
 sp% = sp% + FIX(VAL(tx$))
 xc% = realx(FIX(cursorx)): yc% = realy(FIX(cursory)): cc% = clr%
-rub 100, 40, 300, 100
-PUT (100, 40), ar1
-PUT (100, 100), ar2
-PUT (100, 150), ar3
-PUT (100, 200), ar4
-PUT (100, 250), ar5
-PUT (100, 300), ar6
-ERASE ar1, ar2, ar3, ar4, ar5, ar6
+rub 100, 60, 300, 250
 word txt$, xc%, yc%, thk%, size%, cc%, sp%, 21000, 0
-getit FIX(x), FIX(y), FIX((x + 6) * size%), FIX((y + 9) * size%)
 linex 540, 420, 640, 420, 3, 14
 linex 540, 440, 640, 440, 3, 14
 liney 540, 420, 540, 440, 3, 14
@@ -2787,51 +2771,48 @@ status txt$ + " TEXT DRAWN", 15
 END SUB
 
 SUB tlbrush
-SHARED tools$, pens%, cursorx, cursory, clr%
-STATIC x, y, hx1, hy1, c%
-x = cusorx
-y = cursory
-c% = clr%
-IF (LCASE$(LEFT$(tools$, 5)) = "brush" AND pens% = 1) THEN
-   VIEW SCREEN (42, 22)-(538, 438)'------------Possible error
-   SELECT CASE tools$
-          CASE "brush:1"
-             CIRCLE (realx(x), realy(y)), 3, c%
-             getit x - 3, y - 3, x + 3, y + 3
-          CASE "brush:2"
-             LINE (real(x), realy(y + 9))-(real(x + 10), realy(y)), c%
-             getit x, y, x + 10, y + 9
-          CASE "brush:3"
-             LINE (realx(x), realy(y))-(realx(x + 10), realy(y + 9)), c%
-             getit x, y, x + 10, y + 9
-          CASE "brush:4"
-             linex realx(x), realy(y + 3), realx(x + 6), realy(y + 3), 6, c%
-             getit x, y, x + 6, y + 6
-          END SELECT
-END IF
-VIEW SCREEN (0, 0)-(640, 480)
-END SUB
-
-SUB tlcircle (o%)
-SHARED tools$, cursorx, cursory, clr%
-STATIC x, y, hx1, hy1, c%
+SHARED pens%, cursorx, cursory, clr%
+STATIC x, y, c%
 x = cursorx
 y = cursory
 c% = clr%
+
+   VIEW SCREEN (42, 52)-(538, 438)'------------Possible error 
+   SELECT CASE tools$
+          CASE "brush:1"
+             CIRCLE (realx(x), realy(y)), 3, c%
+          CASE "brush:2"
+             LINE (realx(x), realy(y + 9))-(realx(x + 10), realy(y)), c%
+          CASE "brush:3"
+             LINE (realx(x), realy(y))-(realx(x + 10), realy(y + 9)), c%
+          CASE "brush:4"
+             linex realx(x), realy(y + 3), realx(x + 6), realy(y + 3), 6, c%
+          CASE ELSE
+          END SELECT
+
+VIEW
+END SUB
+
+SUB tlcircle (o%)
+SHARED tools$, cursorx, cursory, clr%, rad%, rat!
+STATIC x, y, c%
+x = realx(cursorx)
+y = realy(cursory)
+c% = clr%
 IF (LEFT$(tools$, 6) = "circle") THEN o% = 0 ELSE o% = 1
-VIEW SCREEN (42, 22)-(538, 438)'------------Possible error
+VIEW SCREEN (42, 52)-(538, 438)'------------Possible error
        FOR i = 1 TO 10
-       CIRCLE (realx(x), realy(y)), i, 15
-       CIRCLE (realx(x), realy(y)), i - 1, 0
+       CIRCLE (x, y), i, 15
+       CIRCLE (x, y), i - 1, 0
          FOR j = 3000 TO 5000 STEP 400
          SOUND j, .05
          NEXT
        NEXT
-     CIRCLE (realx(x), realy(y)), 10, 0
-     disp x - 10, y - 10, x + 10, y + 10
+     CIRCLE (x, y), 10, 0
+     rub FIX(x - 10), FIX(y - 10), FIX(x + 10), FIX(y + 10)
    
 
-     hx1 = x: hy1 = y
+     hx1 = cursorx: hy1 = cursory
      DO UNTIL k$ = CHR$(enter) OR k$ = CHR$(27)
      k$ = INKEY$
      SELECT CASE k$
@@ -2855,122 +2836,78 @@ VIEW SCREEN (42, 22)-(538, 438)'------------Possible error
      hx1 = hx1 + 1
      GOSUB tlcircle3
      GOSUB tlcircle2
+     CASE ELSE
      END SELECT
      LOOP
      click1
-     disp hx1 - 10, hy1 - 10, hx1 + 10, hy1 + 10
      IF k$ = CHR$(27) THEN GOSUB tlcircle1
      IF k$ = CHR$(enter) THEN GOSUB tlcircle2
      
 GOTO tlcirclee
-tlcircle1: dx = ABS(hx1 - x)
-dy = ABS(hy1 - y)
+tlcircle1:
+dx = ABS(realx(hx1) - x)
+dy = ABS(realy(hy1) - y)
 IF (o% = 0) THEN
-  rad = SQR((dx * dx) + (dy * dy))
-  rat = 1
-  ELSE
-  rad = dx
-  rat = dy / dx
+rad = SQR((dx * dx) + (dy * dy))
+rat = 1
+ELSE
+rad = dx
+IF dx = 0 THEN dx = 1
+IF dy = 0 THEN dy = 1
+rat = dy / dx
 END IF
-stp = 90 / r
-ang = 0
-FOR i = 0 TO 360 STEP stp
-   IF (i MOD 91 = 0) THEN ang = 1
-   radi = ((22 / 7) / 180) * ang
-   ht = SIN(radi) * rad * rat
-   lt = COS(radi) * rad
-     SELECT CASE i
-      CASE IS >= 0 AND i <= 90
-       ht = ht * -1
-      CASE IS > 90 AND i <= 180
-       SWAP lt, ht
-       lt = lt * -1
-       ht = ht * -1
-      CASE IS > 180 AND i <= 270
-       lt = lt * -1
-      CASE IS > 270
-       SWAP lt, ht
-      CASE ELSE
-     END SELECT
-    xx = x + lt
-    yy = y + ht
-    disp xx - 1, yy - 1, xx + 1, yy + 1
-NEXT
+CIRCLE (x, y), rad, 0, , , rat
 RETURN
 
-tlcircle2: dx = ABS(hx1 - x)
-dy = ABS(hy1 - y)
+tlcircle2: dx = ABS(realx(hx1) - x)
+dy = ABS(realy(hy1) - y)
 IF (o% = 0) THEN
   rad = SQR((dx * dx) + (dy * dy))
   rat = 1
   ELSE
   rad = dx
+  IF dx = 0 THEN dx = 1
   rat = dy / dx
 END IF
+CIRCLE (x, y), rad, clr%, , , rat
+RETURN
 
-stp = 90 / r
-ang = 0
-LINE (realx(x + r), real(y))-(real(x + r), real(y)), c%
-FOR i = 0 TO 360 STEP stp
-   IF (i MOD 91 = 0) THEN ang = 1
-   radi = ((22 / 7) / 180) * ang
-   ht = SIN(radi) * rad * rat
-   lt = COS(radi) * rad
-     SELECT CASE i
-      CASE IS >= 0 AND i <= 90
-       ht = ht * -1
-      CASE IS > 90 AND i <= 180
-       SWAP lt, ht
-       lt = lt * -1
-       ht = ht * -1
-      CASE IS > 180 AND i <= 270
-       lt = lt * -1
-      CASE IS > 270
-       SWAP lt, ht
-      CASE ELSE
-     END SELECT
-    xx = realx(x + lt)
-    yy = realy(y + ht)
-    LINE -(xx, yy), c%
-
-NEXT
-
-tlcircle3: disp hx1 - 5, hy1 - 5, hx1 + 5, hy1 + 5
+tlcircle3: rub FIX(realx(hx1 - 7)), FIX(realy(hy1 - 7)), FIX(realx(hx1 + 7)), FIX(realy(hy1 + 7))
 LINE (realx(hx1), realy(hy1 - 5))-(realx(hx1), realy(hy1 + 5)), 15
 LINE (realx(hx1 - 5), realy(hy1))-(realx(hx1 + 5), realy(hy1)), 15
 RETURN
 
 
 
-
-tlcirclee: dx = ABS(hx1 - x)
-dy = ABS(hy1 - y)
-IF dx > dy THEN radd = dx ELSE radd = dy
-getit x - radd, y - radd, x + radd, y + radd
-VIEW SCREEN (0, 0)-(640, 480)
+tlcirclee: rad% = rad
+rat! = rat
+VIEW
+click3
 END SUB
 
 SUB tlline
-SHARED tools$, cursorx, cursory, clr%
+SHARED tools$, cursorx, cursory, clr%, hx1%, hy1%, th%
 STATIC x, y
-x = cursorx
-y = cursory
+x = realx(cursorx)
+y = realy(cursory)
 IF (LEFT$(tools$, 4) = "line") THEN
-     VIEW SCREEN (42, 22)-(538, 438)'------------Possible error
+th = VAL(RIGHT$(tools$, 1))
+IF (th = 0) THEN th = 10
+     VIEW SCREEN (42, 52)-(538, 438)'------------Possible error
        FOR i = 1 TO 10
-       CIRCLE (realx(x), realy(y)), i, 15
-       CIRCLE (realx(x), realy(y)), i - 1, 0
+       CIRCLE (x, y), i, 15
+       CIRCLE (x, y), i - 1, 0
          FOR j = 3000 TO 5000 STEP 400
          SOUND j, .05
          NEXT
        NEXT
-     CIRCLE (realx(x), realy(y)), 10, 0
-     disp x - 11, y - 11, x + 11, y + 11
-     LINE (realx(x - 5), realy(y))-(realx(x + 5), realy(y)), clr%
-     LINE (realx(x), realy(y - 5))-(realx(x), realy(y + 5)), clr%
+     CIRCLE (x, y), 10, 0
+     rub FIX(x - 11), FIX(y - 11), FIX(x + 11), FIX(y + 11)
+     LINE (x - 5, y)-(x + 5, y), clr%
+     LINE (x, y - 5)-(x, y + 5), clr%
      
 
-     hx1 = x: hy1 = y
+     hx1 = cursorx: hy1 = cursory
      DO UNTIL k$ = CHR$(enter) OR k$ = CHR$(27)
      k$ = INKEY$
      SELECT CASE k$
@@ -2990,6 +2927,7 @@ IF (LEFT$(tools$, 4) = "line") THEN
      GOSUB tlline1
      hx1 = hx1 + 1
      GOSUB tlline2
+     CASE ELSE
      END SELECT
      LOOP
      click1
@@ -2997,131 +2935,50 @@ IF (LEFT$(tools$, 4) = "line") THEN
      IF k$ = CHR$(enter) THEN GOSUB tlline4
 END IF
 GOTO tllinee
-tlline1: disp hx1 - 5, hy1 - 5, hx1 + 5, hy1 + 5
+tlline1: rub FIX(realx(hx1 - 5)), FIX(realy(hy1 - 5)), FIX(realx(hx1 + 5)), FIX(realy(hy1 + 5))
+linez x, y, realx(hx1), realy(hy1), th, 0
 RETURN
 tlline2: LINE (realx(hx1 - 5), realy(hy1))-(realx(hx1 + 5), realy(hy1)), clr%
 LINE (realx(hx1), realy(hy1 - 5))-(realx(hx1), realy(hy1 + 5)), clr%
-tlline3: xsign = SGN(hx1 - x)
-IF xsign = 0 THEN xsign = 1
-ysign = SGN(hy1 - y)
-yrange = ABS(hy1 - y1)
-xrange = ABS(hx1 - x)
-IF xrange > yrange THEN
-loopval = xrange
-inval = yrange
-ELSE
-loopval = yrange
-inval = xrange
-END IF
-
-FOR ij = 0 TO loopval
-iy = FIX((inval * ij) / xrange)
-IF xrange > yrange THEN
-xvalue = (ij * xsign) + x
-yvalue = (iy * ysign) + y
-ELSE
-xvalue = (iy * xsign) + x
-yvalue = (ij * ysign) + y
-END IF
-disp xvalue, yvalue, xvalue, yvalue
-NEXT
+LINE (x - 5, y)-(x + 5, y), clr%
+LINE (x, y - 5)-(x, y + 5), clr%
+linez x, y, realx(hx1), realy(hy1), th, clr%
 RETURN
-tlline4:
-linez FIX(realx(x)), FIX(realy(y)), FIX(realx(hx1)), FIX(realy(hy1)), 1, clr%
-xsign = SGN(hx1 - x)
-IF xsign = 0 THEN xsign = 1
-ysign = SGN(hy1 - y)
-yrange = ABS(hy1 - y1)
-xrange = ABS(hx1 - x)
-
-IF xrange > yrange THEN
-loopval = xrange
-inval = yrange
-ELSE
-loopval = yrange
-inval = xrange
-END IF
-
-FOR ij = 0 TO loopval
-iy = FIX((inval * ij) / loopval)
-IF xrange > yrange THEN
-xvalue = (ij * xsign) + x
-yvalue = (iy * ysign) + y
-ELSE
-xvalue = (iy * xsign) + x
-yvalue = (ij * ysign) + y
-END IF
-getit xvalue, yvalue, xvalue, yvalue
-NEXT
-
+tlline3: linez x, y, realx(hx1), realy(hy1), th, 0
+RETURN
+tlline4: linez x, y, realx(hx1), realy(hy1), th, clr%
 RETURN
 
-tllinee: xsign = SGN(hx1 - x)
-IF xsign = 0 THEN xsign = 1
-ysign = SGN(hy1 - y)
-yrange = ABS(hy1 - y1)
-xrange = ABS(hx1 - x)
-
-IF xrange > yrange THEN
-loopval = xrange
-inval = yrange
-ELSE
-loopval = yrange
-inval = xrange
-END IF
-
-FOR ij = 0 TO loopval
-iy = FIX((inval * ij) / loopval)
-IF xrange > yrange THEN
-xvalue = (ij * xsign) + x
-yvalue = (iy * ysign) + y
-ELSE
-xvalue = (iy * xsign) + x
-yvalue = (ij * ysign) + y
-END IF
-getit xvalue, yvalue, xvalue, yvalue
-NEXT
-
-
-VIEW SCREEN (0, 0)-(640, 480)
+tllinee: hx1% = hx1
+hy1% = hy1
+th% = th
+VIEW
 click3
 END SUB
 
-SUB tlpencil (fp%)
-SHARED tools$, cursorx, cursory, clr%, pens%
-STATIC x, y, hx1, hy1, c%
-VIEW SCREEN (42, 52)-(538, 438)
-tp% = VAL(RIGHT$(tools$, 1))
-IF tp% = 0 THEN tp% = 10
-pt% = SGN(fp% + pens%)
-IF (LEFT$(tools$, 6) <> "pencil") THEN pt% = 0
-cursor cursorx, cursory, clr%, tp%, pt%
-VIEW SCREEN (0, 0)-(640, 480)
-END SUB
-
 SUB tlrectangle
-SHARED tools$, cursorx, cursory, clr$
-STATIC x, y
-x = cursorx
-y = cursory
+SHARED tools$, cursorx, cursory, clr%, hx1%, hy1%
+STATIC x%, y%
+x% = FIX(realx(cursorx))
+y% = FIX(realy(cursory))
 
 
 IF (LEFT$(tools$, 9) = "rectangle") THEN
-     VIEW SCREEN (42, 22)-(538, 438)'------------Possible error
+     VIEW SCREEN (42, 52)-(538, 438)'------------Possible error
        FOR i = 1 TO 10
-       CIRCLE (realx(x), realy(y)), i, 15
-       CIRCLE (realx(x), realy(y)), i - 1, 0
+       CIRCLE (x%, y%), i, 15
+       CIRCLE (x%, y%), i - 1, 0
          FOR j = 3000 TO 5000 STEP 400
          SOUND j, .05
          NEXT
        NEXT
-     CIRCLE (realx(x), realy(y)), 10, 0
-     disp x - 10, y - 10, x + 10, y + 10
-     LINE (realx(x - 5), realy(y))-(realx(x + 5), realy(y)), clr%
-     LINE (realx(x), realy(y - 5))-(realx(x), realy(y + 5)), clr%
+     CIRCLE (x%, y%), 10, 0
+     rub x% - 10, y% - 10, x% + 10, y% + 10
+     LINE (x% - 5, y%)-(x% + 5, y%), clr%
+     LINE (x%, y% - 5)-(x%, y% + 5), clr%
    
 
-     hx1 = x: hy1 = y
+     hx1 = x% - 42: hy1 = y% - 52
      DO UNTIL k$ = CHR$(enter) OR k$ = CHR$(27)
      k$ = INKEY$
      SELECT CASE k$
@@ -3138,13 +2995,14 @@ IF (LEFT$(tools$, 9) = "rectangle") THEN
      CASE CHR$(0) + CHR$(left)
      GOSUB tlrect1
      hx1 = hx1 - 1
-     IF hx1 < 0 THEN hx = 0
+     IF hx1 < 0 THEN hx1 = 0
      GOSUB tlrect2
      CASE CHR$(0) + CHR$(right)
      GOSUB tlrect1
      hx1 = hx1 + 1
      IF hx1 > 496 THEN hx1 = 496
      GOSUB tlrect2
+     CASE ELSE
      END SELECT
      LOOP
      click1
@@ -3152,68 +3010,62 @@ IF (LEFT$(tools$, 9) = "rectangle") THEN
      IF k$ = CHR$(enter) THEN GOSUB tlrect4
 END IF
 GOTO tlrecte
-tlrect1: disp hx1 - 5, hy1 - 5, hx1 + 5, hy1 + 5
+
+tlrect1: rub realx(hx1 - 5), realy(hy1 - 5), realx(hx1 + 5), realy(hy1 + 5)
 RETURN
+
 tlrect2: LINE (realx(hx1 - 5), realy(hy1))-(realx(hx1 + 5), realy(hy1)), clr%
 LINE (realx(hx1), realy(hy1 - 5))-(realx(hx1), realy(hy1 + 5)), clr%
+LINE (x% - 5, y%)-(x% + 5, y%), clr%
+LINE (x%, y% - 5)-(x%, y% + 5), clr%
+RETURN
 
 tlrect3: IF (RIGHT$(tools$, 1) = "1") THEN
-disp x, y, hx1, y
-disp hx1, y, hx1, hy1
-disp x, hy1, hx1, y
-disp x, y, x, hy1
+rub x%, y%, realx(hx1), y%
+rub realx(hx1), y%, realx(hx1), realy(hy1)
+rub x%, realy(hy1), realx(hx1), y%
+rub x%, y%, x%, realy(hy1)
 ELSE
-disp x, y, hx1, hy1
+rub x%, y%, realx(hx1), realy(hy1)
 END IF
-RETURN
-tlrect4: LINE (realx(x), realy(y))-(realx(hx1), realy(y)), clr%
-LINE (realx(hx1), realy(y))-(realx(hx1), realy(hy1)), clr%
-LINE (realx(hx1), realy(hy1))-(realx(x), realy(hy1)), clr%
-LINE (realx(x), realy(y))-(realx(x), realy(hy1)), clr%
-IF (RIGHT$(tools$, 1) = "2") THEN pnt realx(x), realy(y), realx(hx1), realy(hy1), clr%
 RETURN
 
-tlrecte:
-IF (RIGHT$(tools$, 1) = "1") THEN
-getit x, y, hx1, y
-getit hx1, y, hx1, hy1
-getit hx1, hy1, x, hy1
-getit x, y, x, hy1
-ELSE
-getit x, y, hx1, hy1
-END IF
-VIEW SCREEN (0, 0)-(640, 480)
+tlrect4: LINE (x%, y%)-(realx(hx1), y%), clr%
+LINE (realx(hx1), y%)-(realx(hx1), realy(hy1)), clr%
+LINE (realx(hx1), realy(hy1))-(x%, realy(hy1)), clr%
+LINE (x%, y%)-(x%, realy(hy1)), clr%
+IF (RIGHT$(tools$, 1) = "2") THEN pnt x%, y%, realx(hx1), realy(hy1), clr%
+RETURN
+
+tlrecte: hx1% = hx1
+hy1% = hy1
+VIEW
+click3
 END SUB
 
 SUB tlspray
 SHARED tools$, pens%, cursorx, cursory, clr%
 STATIC x, y, hx1, hy1, c%
-x = cusorx
+x = cursorx
 y = cursory
 c% = clr%
-IF (LCASE$(LEFT$(tools$, 5)) = "spray" AND pens% = 1) THEN
-   VIEW SCREEN (42, 22)-(538, 438)'------------Possible error
-   k$ = INPUT$(1)
-   IF k$ = CHR$(enter) THEN
-   SELECT CASE tools$
-          CASE "spray:1"
+SELECT CASE tools$
+      CASE "spray:1"
       FOR i = x + 1 TO x + 17 STEP .5
       FOR j = 1 TO 2
       a = randnum(y + 1, y + 14)
-      LINE (realx(i), realy(a))-(realx(i), realy(a)), c%
+      LINE (realx(i), realy(a))-(realx(i), realy(a)), clr%
       NEXT
       NEXT
-      getit x, y, x + 18, y + 15
-          CASE "brush:2"
+      CASE "spray:2"
       FOR i = x + 1 TO x + 7 STEP .5
       a = randnum(y + 1, y + 8)
-      LINE (realx(i), realy(a))-(realx(i), realy(a)), c%
+      LINE (realx(i), realy(a))-(realx(i), realy(a)), clr%
       NEXT
-      getit x, y, x + 8, y + 9
-          END SELECT
-END IF
-END IF
-VIEW SCREEN (0, 0)-(640, 480)
+      CASE ELSE
+      END SELECT
+
+click3
 END SUB
 
 SUB tlsprdln
@@ -3233,7 +3085,7 @@ IF (spread$ <> "") THEN
          NEXT
        NEXT
      CIRCLE (realx(x), realy(y)), 10, 0
-     disp x - 10, y - 10, x + 10, y + 10
+     'disp x - 10, y - 10, x + 10, y + 10
      status "Enter direction :", 15
      PSET (realx(x), realy(y))
 
@@ -3320,7 +3172,7 @@ IF spread$ = "curved line" THEN DRAW "ta90"
      END IF
 
      LOOP
-     getit 0, 0, 496, 396
+     'getit 0, 0, 496, 396
      click1
 END IF
 END IF
@@ -3357,7 +3209,7 @@ SELECT CASE k$                      '*********Setting tzol%
   CASE CHR$(0) + CHR$(down)
   GOSUB stool3
   tzol% = tzol% + 1
-  IF tzol% > 7 THEN tzol% = 1
+  IF tzol% > 8 THEN tzol% = 1
   GOSUB stool2
   CASE CHR$(0) + CHR$(up)
   GOSUB stool3
@@ -3491,7 +3343,7 @@ IF k$ = CHR$(enter) THEN
       LINE -(zx + 17, zy + 12), 1
       LINE -(zx + 3, zy + 12), 1
       xc% = zx + 3: xc1% = zy + 12: xc2% = zy + 3
-      linez xc%, xc1%, xc%, xc2%, 1, 1
+      linez xc% * 1!, xc1% * 1!, xc% * 1!, xc2% * 1!, 1, 1
      
       zx1 = zx + 21
       pnt zx1 + 3, zy + 3, zx1 + 17, zy + 12, 1
@@ -3502,11 +3354,11 @@ IF k$ = CHR$(enter) THEN
       LINE (zx + 3, zy + 12)-(zx + 17, zy + 3), 1
       zx1% = zx + 21
       zy1% = zy
-      linez zx1% + 3, zy1% + 12, zx1% + 17, zy1% + 3, 2, 1
+      linez zx1% + 3!, zy1% + 12!, zx1% + 17!, zy1% + 3!, 2, 1
       FOR i% = 3 TO 10
       zx1% = zx1% + 21
       ch% = FIX(i% / 2 + .5)
-      linez zx1% + ch%, zy1% + 15 - ch%, zx1% + 20 - ch%, zy1% + ch%, i%, 1
+      linez zx1% + ch% * 1!, zy1% + 15! - ch%, zx1% + 20! - ch%, zy1% + ch% * 1!, i% * 1!, 1
       NEXT
       tls% = 10
 
@@ -3529,6 +3381,8 @@ IF k$ = CHR$(enter) THEN
       CIRCLE (zx + 10, zy + 7), 6, 1, , , .5
       tls% = 1
 
+      CASE "rubber"
+      pnt zx + 2, zy + 4, zx + 18, zy + 12, 15
       CASE ELSE
       END SELECT
 
@@ -3562,7 +3416,7 @@ rub 253, 443, 547, 477
 
 
    END IF
-tools$ = tools$ + ":" + STR$(tl%)
+tools$ = nospc$(tools$ + ":" + STR$(tl%))
 END IF
 GOTO stool1
 
@@ -3599,6 +3453,8 @@ CASE 6
 tools$ = "oval"
 CASE 7
 tools$ = "spray"
+CASE 8
+tools$ = "rubber"
 CASE ELSE
 END SELECT
 
@@ -3635,6 +3491,7 @@ GOSUB stool3
 zzz$ = tools$
 nullify
 tools$ = zzz$
+click3
 END SUB
 
 FUNCTION volname$
@@ -3665,7 +3522,7 @@ SUB win (h$, c%)
 linex 0, 0, 640, 0, 3, c%
 linex 0, 478, 640, 478, 3, c%
 linex 0, 440, 640, 440, 3, c%
-linex 40, 20, 540, 20, 3, c%
+linex 40, 50, 540, 50, 3, c%
 linex 0, 70, 40, 70, 3, c%
 linex 0, 90, 40, 90, 3, c%
 linex 540, 420, 640, 420, 3, c%
@@ -3679,7 +3536,7 @@ liney 40, 0, 40, 440, 3, c%
 liney 250, 440, 250, 480, 3, c%
 liney 540, 0, 540, 480, 3, c%
 liney 639, 0, 639, 480, 3, c%
-word "FILE NAME - " + UCASE$(h$), 150, 3, 2, 1, 15, 9, 21000, 0
+word "FILE NAME - " + UCASE$(h$), 150, 13, 2, 1, 15, 9, 21000, 0
 '--------------------------Drawing borders complete--------------------------
 
 '============================Colour box======================================
@@ -3721,7 +3578,7 @@ zy = zy + 16
       LINE -(zx + 17, zy + 12), 1
       LINE -(zx + 3, zy + 12), 1
       xc% = zx + 3: xc1% = zy + 12: xc2% = zy + 3
-      linez xc%, xc1%, xc%, xc2%, 1, 1
+      linez xc% * 1!, xc1% * 1!, xc% * 1!, xc2% * 1!, 1, 1
 zy = zy + 16
       CIRCLE (zx + 10, zy + 7), 5, 1
 zy = zy + 16
@@ -3734,6 +3591,7 @@ zy = zy + 16
       NEXT
       NEXT
 zy = zy + 16
+pnt zx + 2, zy + 4, zx + 18, zy + 12, 15
 jk = 0
 jk1 = 0
 '---------------------------Drawing tools complete---------------------------
@@ -3749,7 +3607,6 @@ obj1p "othersymbols:1", zx1, zy1
 zx1 = 546
 obj1p "greeksymbols:1", zx1, zy1
 '---------------------------Drawing objects box complete---------------------
-
 '===========================Drawing spreadlines box==========================
 zx1% = 543
 zy1% = 443
@@ -3803,6 +3660,7 @@ LINE -(zx1% + 36, zy1% + 9), 4
 LINE -(zx1% + 38, zy1% + 6), 4
 LINE -(zx1% + 40, zy1% + 3), 4
 LINE -(zx1% + 42, zy1% + 3), 4
+'----------------------------Drawing spreadlines box complete----------------
 '============================Colour box======================================
 rub 2, 2, 36, 66
 FOR i% = 0 TO 7
@@ -3820,9 +3678,9 @@ SUB word (s AS STRING, x AS INTEGER, y AS INTEGER, t1 AS INTEGER, p1 AS INTEGER,
 hx1% = x
 FOR i% = 1 TO LEN(s$)
 a$ = MID$(s$, i%, 1)
-IF a$ <> " " THEN char a$, hx1%, y, t1, p1, c
+IF a$ <> " " THEN char a$, hx1% * 1!, y * 1!, t1 * 1!, p1 * 1!, c
 hx1% = hx1% + p
-'SOUND f, .01
+SOUND f, t
 NEXT
 END SUB
 
