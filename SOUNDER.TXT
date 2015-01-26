@@ -9,11 +9,11 @@ COMMON SHARED cursorx, cursory, tadd%, spread$, userobj$, imagex, imagey, option
 '  imagex      - size x of an object stored (no main)
 '  imagey      - size y of an object stored (no main)
 '  option$()   - array of options stored for use in mainmenu
-'  optionx%()  - array for options x positions for use in mainmenu   
-'  cps$()      - array for storing comments on options for mainmenu                                                                                                       
+'  optionx%()  - array for options x positions for use in mainmenu  
+'  cps$()      - array for storing comments on options for mainmenu                                                                                                      
 '  clrs()      - double array for storing palette values
-'  return$     - stores any return value of a subroutine                                                                                                                                                                      
-'  clr%        - current colour selected                                                                                                           
+'  return$     - stores any return value of a subroutine                                                                                                                                                                     
+'  clr%        - current colour selected                                                                                                          
 '  tools$      - stores the tool name selected
 '  objs1%      - stores the object name selected
 '  tadd%       - stores time constant
@@ -74,6 +74,9 @@ DECLARE FUNCTION numdirs ()
 DECLARE FUNCTION dirs$ (s AS STRING)
 DECLARE FUNCTION fzl$ (a AS STRING, s AS STRING)
 DECLARE FUNCTION files$ (a AS STRING, s AS STRING)
+DECLARE FUNCTION fileName$ (file$)
+DECLARE FUNCTION fullFileName$ (file$, ext$)
+DECLARE FUNCTION indexOf% (s$, f$)
 
 '============================================================================
 
@@ -222,7 +225,6 @@ FOR i = 1 TO LOF(frf)
   SEEK #frf, i
   zz$ = INPUT$(1, #frf)
   IF (zz$ = CHR$(9) OR zz$ = CHR$(10) OR zz$ = CHR$(13)) OR (ASC(zz$) > 31 AND ASC(zz$) < 127) THEN PRINT zz$;
-k$ = INPUT$(1)
 NEXT
 lns = 0
 k$ = INPUT$(1)
@@ -277,8 +279,8 @@ IF zx% = 2 THEN GOTO opt12
 IF zx% = 3 THEN GOTO main
 opt11: file$ = menu$("FILE NAME", 50, 50, 400, 200, "WHAT IS THE FILE NAME#", "OK.", 21000, 0, 8, 13, 1)
 IF file$ = "esc" THEN GOTO opt1
-IF LEN(file$) < 4 THEN GOTO opt11
 file$ = LEFT$(file$, LEN(file$) - 3)
+file$ = fileName$(file$)
 GOSUB setcolors
 PALETTE 0, 65536 * 9 + 256 * 3 + 15
 ld
@@ -462,7 +464,7 @@ GOSUB cursors
   
    CASE CHR$(0) + CHR$(kf1)
    GOSUB putscreen
-   save file$ + ".pic", 49
+   save fullFileName$(file$, ".pic"), 49
    cursor cursorx, cursory, clr%, cur%
 
    CASE CHR$(0) + CHR$(kf2)
@@ -527,12 +529,12 @@ IF zx% = 2 THEN GOTO opt22
 IF zx% = 3 THEN GOTO main
 opt21: acc$ = menu$("FILE NAME", 150, 100, 390, 250, "ENTER THE NAME OF FILE FILE WHICH YOU WANT TO LOAD", "OK.", 20000, .2, 1, 3, 1)
 file$ = LEFT$(acc$, LEN(acc$) - 3)
+file$ = fileName$(file$)
 CLS
 'GOSUB loadclrs
 win file$, 14
-file$ = "PIC\" + file$ + ".pic"
 GOSUB setcolors
-load file$, 49, 42, 52
+load fullFileName$(file$, ".pic"), 49, 42, 52
 GOSUB getscreen
 GOTO opte
 
@@ -1317,6 +1319,12 @@ word s$, x, y, t1, p1, c, i%, f, t
 NEXT
 END SUB
 
+FUNCTION fileName$ (file$)
+
+dot% = indexOf%(file$, ".")
+IF dot% = -1 THEN fileName$ = file$ ELSE fileName$ = LEFT$(file$, dot% - 1)
+END FUNCTION
+
 FUNCTION files$ (a AS STRING, s AS STRING)
 fl$ = fzl$(a$, s$)
 ot$ = ""
@@ -1350,6 +1358,11 @@ NEXT
 files$ = ot$
 END FUNCTION
 
+FUNCTION fullFileName$ (file$, ext$)
+
+fullFileName$ = fileName$(file$) + ext$
+END FUNCTION
+
 FUNCTION fzl$ (a AS STRING, s AS STRING)
 SHELL "dir *." + a$ + ">ram.pth"
 b = FREEFILE
@@ -1362,6 +1375,19 @@ NEXT
 fils: CLOSE #b
 KILL "ram.pth"
 fzl$ = c$
+END FUNCTION
+
+FUNCTION indexOf% (s$, f$)
+
+sLen% = LEN(s$)
+fLen% = LEN(f$)
+FOR i% = 1 TO sLen% - fLen% + 1
+p$ = MID$(s$, i%, fLen%)
+IF p$ = f$ THEN EXIT FOR
+NEXT
+
+indexOf% = -1
+IF p$ = s$ THEN indexOf% = i%
 END FUNCTION
 
 SUB intensity (r%, G%, b%)
@@ -1438,7 +1464,7 @@ FOR i = 1 TO 359
 grad = (359 * (22 / 7)) / 180
 ij = i MOD 72
 IF ij > 36 THEN iij = 36 - ij ELSE iij = ij
-FOR j = 1 TO 100
+FOR j = 1 TO 100 STEP 10
 CIRCLE (300, 250), j, 10, 0, grad, ((iij / 36))
 NEXT
 CIRCLE (300, 250), 101, 0, 0, grad, ((iij / 36))
@@ -1480,52 +1506,22 @@ IF ABS(hx1 - hx2) > ABS(hy1 - hy2) THEN linex hx1, hy1, hx2, hy2, t, c ELSE line
 END SUB
 
 SUB load (f$, io%, x%, y%)
-fr = FREEFILE      'ips=49
+fr = FREEFILE
 OPEN "B", #fr, f$
 
-VIEW SCREEN (42, 52)-(538, 438)
-ips = 49
-SEEK #fr, ips
-ad1 = ASC(INPUT$(1, #fr))
-ips = ips + 1
-SEEK #fr, ips
-ad2 = ASC(INPUT$(1, #fr))
-ips = ips + 1
-xmin = ad1 + ad2
+'VIEW SCREEN (42, 52)-(538, 438)
 
-SEEK #fr, ips
-ad1 = ASC(INPUT$(1, #fr))
-ips = ips + 1
-SEEK #fr, ips
-ad2 = ASC(INPUT$(1, #fr))
-ips = ips + 1
-xmax = ad1 + ad2
-
-SEEK #fr, ips
-ad1 = ASC(INPUT$(1, #fr))
-ips = ips + 1
-SEEK #fr, ips
-ad2 = ASC(INPUT$(1, #fr))
-ips = ips + 1
-ymin = ad1 + ad2
-
-SEEK #fr, ips
-ad1 = ASC(INPUT$(1, #fr))
-ips = ips + 1
-SEEK #fr, ips
-ad2 = ASC(INPUT$(1, #fr))
-ips = ips + 1
-ymax = ad1 + ad2
-yszz = ymax - ymin
-
-FOR xx = xmin TO xmax
-FOR yy = ymin TO ymax
-SEEK #fr, position(49, (xx - xmin), (yy - ymin), yszz)
-ad = ASC(INPUT$(1, #fr))
-LINE (realx(xx), realy(yy))-(realx(xx), realy(yy)), ad
-
+status "Loading image . . .", 15
+click1
+SEEK #fr, 1
+FOR xx = 0 TO 496
+FOR yy = 0 TO 386
+cl% = ASC(INPUT$(1, #fr))
+PSET (realx(xx), realy(yy)), cl%
 NEXT
 NEXT
+status "Image Loaded", 10
+click1
 
 CLOSE #fr
 VIEW
@@ -1557,7 +1553,7 @@ opts% = UBOUND(option$)
 FOR i% = 0 TO opts% - 1
 expand option$(i%), optionx%(i%), os% + (i% * 20), 3, 1, oc%, 15, 21000, 0
 NEXT
-expand "INTELLIGENT MINDS CORPORATION", 380, 450, 2, 1, 2, 9, 21000, 0
+expand "INTELLIGENT MINDS CORPORATION", 360, 450, 2, 1, 2, 9, 21000, 0
 '//////////////////////////////Menu created
 
 linez bx1% * 1!, by1% * 1!, bx2% * 1!, by1% * 1!, 5, bc%'+++++++Drawing text box
@@ -2392,6 +2388,8 @@ END SUB
 
 SUB obj2
 SHARED userobj$
+
+EXIT SUB
 click1
 SHELL "cd OBJ"
 fi = numfiles("obj")
@@ -2663,54 +2661,17 @@ END SUB
 
 SUB save (f$, io%)
 fr = FREEFILE
-length& = LOF(fr)
 OPEN "B", #fr, f$
-status "Reading image . . .", 15
+status "Saving image . . .", 15
 click1
-xmin = 500
-ymin = 500
-xmax = 0
+SEEK #fr, 1
 FOR xx = 0 TO 496
 FOR yy = 0 TO 386
-cl = POINT(realx(xx), realy(yy))
-IF (cl <> 0) THEN
-IF (xx < xmin) THEN
-xmin = xx
-ymin = yy
-END IF
-IF (xx > xmax) THEN xmax = xx
-END IF
+cl$ = CHR$(POINT(realx(xx), realy(yy)))
+PUT #fr, , cl$
 NEXT
 NEXT
-fpos = 1
-status "Reading image complete.  Saving image . . . ", 15
-click1
-FOR xx = xmin TO xmax
-FOR yy = 0 TO 386
-cl = POINT(realx(xx), realy(yy))
-
-IF (cl <> 0) THEN
-freq = (yy - ymin) + 32767
-vl1 = INT(freq / 256)
-vl2 = freq - (vl1 * 256)
-a$ = CHR$(vl1) + CHR$(vl2)
-PUT #fr, fpos, a$
-fpos = fpos + 2
-END IF
-NEXT
-NEXT
-FOR i = LOF(fr) TO 1
-SEEK #fr, i
-a$ = INPUT$(1, #fr)
-IF a$ = " " OR a$ = CHR$(0) THEN p = i ELSE EXIT FOR
-NEXT
-OPEN "B", #15, "ram.lvl"
-FOR i = 1 TO p
-SEEK #fr, i
-a$ = INPUT$(1, #fr)
-PUT #15, i, a$
-NEXT
-CLOSE #fr, 15
+CLOSE #fr
 status "File saved", 10
 click1
 
