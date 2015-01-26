@@ -1,33 +1,26 @@
 COMMON SHARED cursorx, cursory, tadd%, spread$, userobj$, imagex, imagey, option$(), optionx%(), cps$(), clrs(), return$, clr%, tools$, pens%, objs1$, hx1%, hy1%, th%, rad%, rat!, drawx%, drawy%, degr%, txt$, xc%, yc%, thk%, size%, cc%, sp%, rate%
 
 '------------------------------Shared variables------------------------------
-'  cursorx       - x position of cursor
-'  cursory              - y position of cursor
-'  pens%                - stores wteher pen up or pen down (0/1)
-'  spread$              - spreadline selected
+'  cursorx     - x position of cursor
+'  cursory     - y position of cursor
+'  pens%       - stores wteher pen up or pen down (0/1)
+'  spread$     - spreadline selected
 '  userobj$    - user object created in OBJ folder
 '  imagex      - size x of an object stored (no main)
 '  imagey      - size y of an object stored (no main)
 '  option$()   - array of options stored for use in mainmenu
 '  optionx%()  - array for options x positions for use in mainmenu    
-'  cps$()               - array for storing comments on options for mainmenu                                                                                                        
-'  clrs()               - double array for storing palette values
-'  return$              - stores any return value of a subroutine                                                                                                                                                                       
-'  clr%                 - current colour selected                                                                                                            
-'  tools$               - stores the tool name selected
-'  objs1%               - stores the object name selected
-'  tadd%                - stores time constant
+'  cps$()      - array for storing comments on options for mainmenu                                                                                                        
+'  clrs()      - double array for storing palette values
+'  return$     - stores any return value of a subroutine                                                                                                                                                                       
+'  clr%        - current colour selected                                                                                                            
+'  tools$      - stores the tool name selected
+'  objs1%      - stores the object name selected
+'  tadd%       - stores time constant
 '============================================================================
 
 
-
-
-
-
-
 '===============================Declarations=================================
-
-
 DECLARE FUNCTION position (add, x, y, ysize)
 DECLARE SUB save (f$, io%)
 DECLARE SUB load (f$, io%, x%, y%)
@@ -84,19 +77,18 @@ DECLARE FUNCTION files$ (a AS STRING, s AS STRING)
 
 '============================================================================
 
-
-DEFINT A-B, D-H, J-Z'//////// Defining variable types
+'variable types
+DEFINT A-B, D-H, J-Z
 DEFSNG C
 DEFLNG I
 DEFDBL T
 
-ON ERROR GOTO errs      '----------Stopping errors
+'handle errors
+ON ERROR GOTO errs
 
-
-'---------------------------Setting Memory
+'prepare memory
 CLEAR 2100000000
 iii = SETMEM(2100000000)
-'------------------------------------------
 
 '============================Declaring Keys==================================
 CONST backspc = 8, enter = 13, htab = 9
