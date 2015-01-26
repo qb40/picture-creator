@@ -99,22 +99,21 @@ CONST kf1 = 59, kf2 = 60, kf3 = 61, kf4 = 62, kf5 = 63, kf6 = 64, kf7 = 65, kf8 
 '-----------------------------Keys declared---------------------------------
 
 
-'--------------------------------Defining Screen areas
+'============================Defining Screen areas==========================
 DIM iarea1(6200), iarea2(10070), iarea3(10070), iarea4(10070), iarea5(10070), iarea6(3900)
-'------------------------------------------------------
+'-----------------------------Screen areas defined--------------------------
 
 
 CLS
 SCREEN 12
 GOSUB getscreen
-'--------------------Starting common things
+
+'starting common things
 return$ = ""
 clr% = 0
 REM $DYNAMIC
 DIM clrs(16, 3)
 inst = 0
-'-------------------------------------------
-
 
 '===============================Getting timer================================
 aaaa: sec1 = VAL(RIGHT$(TIME$, 2))
@@ -149,7 +148,8 @@ FOR j = 0 TO 15
 CIRCLE (320, 240), i + j, j
 NEXT
 NEXT
-  'time speed++++++++++++++++++++++++
+
+'time speed
 FOR i = 0 TO 63 STEP 2
 FOR j = 0 TO 15
 PALETTE j, 65536 * 0 + 256 * 0 + i
@@ -197,7 +197,7 @@ option$(2) = "HELP": optionx%(2) = 280
 option$(3) = "CREDITS": optionx%(3) = 260
 option$(4) = "EXIT": optionx%(4) = 280
 DIM SHARED cps$(5)
-cps$(0) = "OPTIONS FOR CREATING IDIVIDUAL PICTURE OR PROJECT FOR PICTURE OBJECTS"
+cps$(0) = "OPTIONS FOR CREATING INDIVIDUAL PICTURE OR PROJECT FOR PICTURE OBJECTS"
 cps$(1) = "OPTIONS FOR LOADING INDIVIDUAL PICTURE OR PROJECT FOR PICTURE OBJECTS"
 cps$(2) = "PROVIDES HELP"
 cps$(3) = "SUBHAJIT SAHU"
@@ -210,7 +210,6 @@ IF zx% = 2 THEN GOTO opt2
 IF zx% = 3 THEN GOTO opt3
 IF zx% = 4 THEN GOTO opt4
 IF zx% = 5 THEN GOTO opt5
-'//////////////////////Working menu complete
 '------------------------------Main Menu complete----------------------------
 
 
