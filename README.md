@@ -1,12 +1,9 @@
-**picturecreator** is a funny picture creator tool for dos.
-It is like the classic paint provided by Microsoft, but in dos.
-The cursor can be moved with keyboard which makes it very slow.
-Again, the program is too big, it could not be compiled in
-QuickBASIC, and hence must be interpreted using
-[QuickBASIC](https://github.com/qb40/qb).
+**picturecreator** is a funny picture creator tool for dos. It is like the
+classic paint provided by Microsoft, but in dos. The cursor can be moved with
+keyboard which makes it very slow. Again, the program is too big, it could not
+be compiled in QuickBASIC, and hence must be interpreted using [QuickBASIC].
 
-
-## demo
+<br>
 
 <img src="https://raw.githubusercontent.com/qb40/picturecreator/gh-pages/0/image/0.png" width="70%"><br/>
 <img src="https://raw.githubusercontent.com/qb40/picturecreator/gh-pages/0/image/1.png" width="70%"><br/>
@@ -57,3 +54,5 @@ QuickBASIC, and hence must be interpreted using
 
 
 [![qb40](https://i.imgur.com/xAWLn0I.jpg)](https://qb40.github.io)
+
+[QuickBASIC]: https://github.com/qb40/qb
